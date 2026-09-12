@@ -1,0 +1,22 @@
+[
+  {
+    "id": "usr_demo123",
+    "fullName": "Ananya Sharma",
+    "email": "demo@safeher.org",
+    "password": "password123",
+    "phone": "+91 7061330201",
+    "emergencyContactName": "Aarav Sharma (Brother)",
+    "emergencyContactPhone": "+91 9876543210",
+    "createdAt": "2026-09-12T14:47:08.246Z"
+  },
+  {
+    "id": "usr_mtyi1e83_6kux",
+    "fullName": "Priya Verma",
+    "email": "priya@safeher.org",
+    "password": "secretpassword",
+    "phone": "+91 9988776655",
+    "emergencyContactName": "Sunita Verma (Mother)",
+    "emergencyContactPhone": "+91 9988776600",
+    "createdAt": "2026-09-12T14:47:26.019Z"
+  }
+]

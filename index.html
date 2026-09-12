@@ -3,12 +3,343 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SafeHer — Women's Safety · Roorkee · MST Blockchain Edition</title>
-<script>
-  window.location.replace("home.html");
-</script>
+<title>SafeHer — Women's Safety & Emergency Telemetry · MST Blockchain</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0b0c10;--surface:#13141a;--surface2:#1a1b24;--surface3:#22232f;
+  --border:rgba(255,255,255,0.08);
+  --rose:#ff4d72;--rose-dim:rgba(255,77,114,0.15);--rose-glow:rgba(255,77,114,0.35);
+  --amber:#ffb347;--amber-dim:rgba(255,179,71,0.15);
+  --green:#36d68a;--green-dim:rgba(54,214,138,0.12);
+  --blue:#4d9fff;--blue-dim:rgba(77,159,255,0.12);
+  --text:#f0f0f5;--muted:#8a8a9a;--dim:#5a5a6a;
+  --r:20px;--rs:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  background-image:
+    radial-gradient(circle at 50% 10%, rgba(255,77,114,0.18), transparent 50%),
+    radial-gradient(circle at 90% 90%, rgba(77,159,255,0.12), transparent 45%),
+    radial-gradient(circle at 10% 80%, rgba(54,214,138,0.1), transparent 45%);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* NAVBAR */
+.navbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 36px;
+  background:rgba(19,20,26,0.85);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-family:'Instrument Serif',serif;
+  font-size:24px;
+  text-decoration:none;
+  color:var(--text);
+}
+.logo-dot{
+  width:34px;height:34px;
+  background:var(--rose);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:15px;
+  box-shadow:0 0 18px var(--rose-glow);
+}
+
+.nav-actions{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.btn-nav{
+  text-decoration:none;
+  font-size:13px;
+  font-weight:600;
+  padding:8px 18px;
+  border-radius:99px;
+  border:1px solid var(--border);
+  background:var(--surface2);
+  color:var(--text);
+  transition:all 0.2s ease;
+}
+.btn-nav:hover{
+  background:var(--surface3);
+  border-color:rgba(255,255,255,0.2);
+}
+
+.btn-nav-primary{
+  background:linear-gradient(135deg,#ff3d65,#ff6b8a);
+  color:#fff;
+  border:none;
+  box-shadow:0 4px 16px rgba(255,77,114,0.35);
+}
+.btn-nav-primary:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 20px rgba(255,77,114,0.45);
+}
+
+/* HERO SECTION */
+.hero{
+  max-width:1050px;
+  margin:60px auto 40px;
+  padding:0 24px;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.hero-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:var(--green-dim);
+  color:var(--green);
+  border:1px solid rgba(54,214,138,0.25);
+  padding:6px 16px;
+  border-radius:99px;
+  font-size:12px;
+  font-weight:700;
+  margin-bottom:24px;
+}
+
+.hero-title{
+  font-size:52px;
+  font-weight:800;
+  line-height:1.15;
+  letter-spacing:-1.5px;
+  margin-bottom:20px;
+  max-width:850px;
+}
+.hero-title span{
+  background:linear-gradient(135deg, #ff4d72, #ff8da1);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.hero-sub{
+  font-size:17px;
+  color:var(--muted);
+  max-width:680px;
+  line-height:1.6;
+  margin-bottom:36px;
+}
+
+.auth-cta-box{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-bottom:48px;
+}
+
+.btn-hero{
+  padding:14px 28px;
+  border-radius:12px;
+  font-size:15px;
+  font-weight:700;
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  transition:all 0.2s ease;
+  cursor:pointer;
+}
+
+.btn-hero-rose{
+  background:linear-gradient(135deg,#ff3d65,#ff6b8a);
+  color:#fff;
+  box-shadow:0 8px 30px rgba(255,77,114,0.4);
+}
+.btn-hero-rose:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 38px rgba(255,77,114,0.5);
+}
+
+.btn-hero-blue{
+  background:rgba(77,159,255,0.14);
+  color:var(--blue);
+  border:1px solid rgba(77,159,255,0.3);
+}
+.btn-hero-blue:hover{
+  background:rgba(77,159,255,0.25);
+  box-shadow:0 0 16px rgba(77,159,255,0.3);
+}
+
+.btn-hero-ghost{
+  background:var(--surface2);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+.btn-hero-ghost:hover{
+  background:var(--surface3);
+}
+
+/* FEATURES GRID */
+.features-grid{
+  max-width:1050px;
+  margin:0 auto 80px;
+  padding:0 24px;
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:20px;
+}
+@media(max-width:768px){
+  .features-grid{grid-template-columns:1fr;}
+  .hero-title{font-size:36px;}
+}
+
+.fc{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:24px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  transition:all 0.25s ease;
+}
+.fc:hover{
+  border-color:rgba(255,255,255,0.15);
+  transform:translateY(-3px);
+}
+
+.fc-icon{
+  width:44px;height:44px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+}
+.fc-icon.rose{background:var(--rose-dim);color:var(--rose);}
+.fc-icon.blue{background:var(--blue-dim);color:var(--blue);}
+.fc-icon.green{background:var(--green-dim);color:var(--green);}
+
+.fc-title{
+  font-size:16px;
+  font-weight:700;
+}
+.fc-desc{
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.5;
+}
+
+/* FOOTER */
+.footer{
+  margin-top:auto;
+  border-top:1px solid var(--border);
+  padding:24px;
+  text-align:center;
+  font-size:12.5px;
+  color:var(--dim);
+}
+</style>
 </head>
 <body>
-  <p>Redirecting to <a href="home.html">SafeHer Control Center</a>...</p>
+
+<header class="navbar">
+  <a href="index.html" class="logo"><div class="logo-dot">🛡</div>SafeHer</a>
+  <div class="nav-actions" id="navAuthActions">
+    <a href="login.html" class="btn-nav">Sign In 🔑</a>
+    <a href="signup.html" class="btn-nav btn-nav-primary">Create Account ✨</a>
+  </div>
+</header>
+
+<main class="hero">
+  <div class="hero-pill">
+    <span class="dot" style="width:7px;height:7px;border-radius:50%;background:var(--green);"></span>
+    MST Blockchain Active • Chain ID 91562037
+  </div>
+
+  <h1 class="hero-title">
+    Real-Time Emergency SOS & <span>Blockchain Protection</span> for Women
+  </h1>
+
+  <p class="hero-sub">
+    SafeHer combines live GPS location telemetry, instant ntfy phone push notifications, Google Maps turn-by-turn navigation, and tamper-proof smart contract proofs on MST Testnet.
+  </p>
+
+  <div class="auth-cta-box" id="ctaAuthBox">
+    <a href="signup.html" class="btn-hero btn-hero-rose">
+      ✨ Create Account & Protect Now
+    </a>
+    <a href="login.html" class="btn-hero btn-hero-blue">
+      🔑 Existing User Sign In
+    </a>
+    <button onclick="window.SafeHerAuth.quickDemoLogin()" class="btn-hero btn-hero-ghost">
+      ⚡ Quick Guest Demo Access
+    </button>
+  </div>
+</main>
+
+<section class="features-grid">
+  <div class="fc">
+    <div class="fc-icon rose">🆘</div>
+    <div class="fc-title">1-Tap Emergency SOS</div>
+    <div class="fc-desc">Fires immediate real-time push alerts to phone number +91 7061330201 via ntfy and automatically dispatches local control rooms.</div>
+  </div>
+
+  <div class="fc">
+    <div class="fc-icon blue">🗺️</div>
+    <div class="fc-title">Google Maps & SafeWay Routing</div>
+    <div class="fc-desc">Interactive Google Maps vector tiles with turn-by-turn directions. Evaluates SafeWay Route A (97% Safe Score) vs Direct Shortcuts.</div>
+  </div>
+
+  <div class="fc">
+    <div class="fc-icon green">⛓️</div>
+    <div class="fc-title">MST Blockchain Proofs</div>
+    <div class="fc-desc">Every SOS trigger creates a cryptographic SHA-256 fingerprint verified directly on contract 0x7662...6eDc on MST Testnet.</div>
+  </div>
+</section>
+
+<footer class="footer">
+  SafeHer — Women's Safety & MST Blockchain Telemetry Hub • Built for MST Blockchain Hackathon
+</footer>
+
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.SafeHerAuth && window.SafeHerAuth.isLoggedIn()) {
+    const user = window.SafeHerAuth.getUser();
+    
+    // Update navbar actions
+    document.getElementById('navAuthActions').innerHTML = `
+      <span style="font-size:13px;color:var(--muted);font-weight:500;">Hello, <strong style="color:var(--text);">${user.fullName}</strong></span>
+      <a href="home.html" class="btn-nav btn-nav-primary">🚀 Dashboard</a>
+      <button onclick="window.SafeHerAuth.logout()" class="btn-nav">Log Out</button>
+    `;
+
+    // Update CTA Box
+    document.getElementById('ctaAuthBox').innerHTML = `
+      <a href="home.html" class="btn-hero btn-hero-rose" style="padding:16px 36px;font-size:16px;">
+        🚀 Go to SafeHer Emergency Control Center →
+      </a>
+    `;
+  }
+});
+</script>
 </body>
 </html>

@@ -252,7 +252,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   </button>
   <div class="pill pill-green"><div class="dot-blink"></div>MST Testnet Active</div>
   <div class="tb-clock" id="clock">--:--:--</div>
-  <div class="avatar">S</div>
+  <div class="avatar" id="userAvatar" onclick="openModal('profileModal')" title="View User Profile" style="cursor:pointer;">S</div>
+  <button class="wallet-btn" onclick="window.SafeHerAuth.logout()" style="border-color:rgba(255,77,114,0.3);color:var(--rose);background:var(--rose-dim);padding:5px 11px;font-size:11px;" title="Log out of SafeHer">🚪 Sign Out</button>
 </header>
 
 <!-- SIDEBAR -->
@@ -264,7 +265,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   <a href="#routesSection" class="navi"><span class="navi-ic">🧭</span>Safe Routes</a>
   <a href="history.html" class="navi"><span class="navi-ic">📋</span>Proof History</a>
   <div class="s-sec">Account</div>
-  <a href="javascript:void(0)" class="navi" onclick="toast('info','👤','Profile Settings','User profile & settings ready.')"><span class="navi-ic">👤</span>Profile</a>
+  <a href="javascript:void(0)" class="navi" onclick="openModal('profileModal')"><span class="navi-ic">👤</span>Profile</a>
   <a href="javascript:void(0)" class="navi" onclick="toast('info','⚙️','System Settings','MST Blockchain Node & Gateway active.')"><span class="navi-ic">⚙️</span>Settings</a>
   <div class="s-sos-wrap">
     <button onclick="triggerSOS()" style="width:100%;padding:12px 15px;border-radius:11px;border:none;cursor:pointer;background:linear-gradient(135deg,#ff3d65,#ff6b8a);color:#fff;display:flex;align-items:center;gap:9px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13.5px;letter-spacing:.4px;box-shadow:0 4px 16px rgba(255,77,114,.3);transition:all .15s;">
@@ -497,6 +498,34 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <div class="mfooter">
       <button class="btn btn-green" onclick="saveContact()">✓ Add Contact</button>
       <button class="btn btn-ghost" onclick="closeModal('addModal')">Cancel</button>
+<!-- USER PROFILE MODAL -->
+<div class="mb" id="profileModal">
+  <div class="modal">
+    <div class="mh blu">
+      <div style="font-size:38px;">👤</div>
+      <div class="mh-title" style="color:var(--blue);" id="pModalName">User Profile</div>
+      <div class="mh-sub" id="pModalEmail">user@example.com</div>
+    </div>
+    <div class="mbody" style="gap:12px;">
+      <div style="background:var(--surface2);border-radius:10px;padding:12px;border:1px solid var(--border);">
+        <div style="font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;margin-bottom:4px;">Primary Phone Number</div>
+        <div style="font-size:13px;font-weight:600;" id="pModalPhone">+91 7061330201</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:10px;padding:12px;border:1px solid var(--border);">
+        <div style="font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;margin-bottom:4px;">Emergency Guardian Contact</div>
+        <div style="font-size:13px;font-weight:600;" id="pModalGuardian">Aarav Sharma (+91 9876543210)</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:10px;padding:12px;border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;">MST Blockchain Status</div>
+          <div style="font-size:12px;color:var(--green);font-weight:600;margin-top:2px;">✓ Verified Account Anchor</div>
+        </div>
+        <span style="font-size:10.5px;background:var(--green-dim);color:var(--green);padding:3px 8px;border-radius:99px;border:1px solid rgba(54,214,138,.3);">Chain ID 91562037</span>
+      </div>
+    </div>
+    <div class="mfooter">
+      <button class="btn btn-rose" onclick="window.SafeHerAuth.logout()">🚪 Log Out of SafeHer</button>
+      <button class="btn btn-ghost" onclick="closeModal('profileModal')">Close</button>
     </div>
   </div>
 </div>
@@ -506,6 +535,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="js/blockchain.js"></script>
 <script src="js/app.js"></script>
+<script src="js/auth.js"></script>
 
 <script>
 'use strict';
@@ -1159,6 +1189,35 @@ function call112(){
   setTimeout(function(){toast('success','🚓','Connected','Emergency police responding. Patrol dispatched.',5000);},2500);
 }
 
+function syncUserProfileData() {
+  if (!window.SafeHerAuth) return;
+  const user = window.SafeHerAuth.getUser();
+  if (!user) return;
+
+  const avatarEl = document.getElementById('userAvatar');
+  if (avatarEl && user.fullName) {
+    avatarEl.textContent = user.fullName.charAt(0).toUpperCase();
+  }
+
+  const pName = document.getElementById('pModalName');
+  const pEmail = document.getElementById('pModalEmail');
+  const pPhone = document.getElementById('pModalPhone');
+  const pGuardian = document.getElementById('pModalGuardian');
+
+  if (pName) pName.textContent = user.fullName;
+  if (pEmail) pEmail.textContent = user.email;
+  if (pPhone) pPhone.textContent = user.phone || '+91 7061330201';
+  if (pGuardian) pGuardian.textContent = (user.emergencyContactName || 'Emergency Guardian') + ' (' + (user.emergencyContactPhone || '+91 9876543210') + ')';
+
+  contacts = [
+    {n: user.fullName + ' (You)', r:'Account Holder', p: user.phone || '7061330201', c:'#e11d48', sent:false},
+    {n: user.emergencyContactName || 'Emergency Guardian', r:'Primary Guardian', p: user.emergencyContactPhone || '98765 43210', c:'#7c3aed', sent:false},
+    {n: 'Control Room 112', r:'Emergency Services', p:'112', c:'#0891b2', sent:false},
+    {n: 'Sunita Verma', r:'Best Friend', p:'87654 32109', c:'#047857', sent:false}
+  ];
+  renderContacts();
+}
+
 // Clock
 setInterval(function(){
   document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-IN',{hour12:false});
@@ -1171,6 +1230,12 @@ window.addEventListener('resize', function() {
 
 // Initialize on page load
 window.addEventListener('load', function() {
+  if (window.SafeHerAuth) {
+    const isOk = window.SafeHerAuth.requireAuth('login.html');
+    if (!isOk) return;
+    window.SafeHerAuth.bindUserUI();
+    syncUserProfileData();
+  }
   initDynamicLocationTracker();
 });
 </script>

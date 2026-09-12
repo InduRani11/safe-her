@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SafeHer — Sign In to Emergency Control Center</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0b0c10;--surface:#13141a;--surface2:#1a1b24;--surface3:#22232f;
+  --border:rgba(255,255,255,0.08);
+  --rose:#ff4d72;--rose-dim:rgba(255,77,114,0.15);--rose-glow:rgba(255,77,114,0.35);
+  --amber:#ffb347;--amber-dim:rgba(255,179,71,0.15);
+  --green:#36d68a;--green-dim:rgba(54,214,138,0.12);
+  --blue:#4d9fff;--blue-dim:rgba(77,159,255,0.12);
+  --text:#f0f0f5;--muted:#8a8a9a;--dim:#5a5a6a;
+  --r:20px;--rs:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(255,77,114,0.15), transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(77,159,255,0.12), transparent 45%);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.auth-header-nav{
+  position:fixed;
+  top:0;left:0;right:0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 32px;
+  background:rgba(19,20,26,0.85);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  z-index:10;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-family:'Instrument Serif',serif;
+  font-size:22px;
+  text-decoration:none;
+  color:var(--text);
+}
+.logo-dot{
+  width:32px;height:32px;
+  background:var(--rose);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  box-shadow:0 0 16px var(--rose-glow);
+}
+
+.nav-link-btn{
+  color:var(--muted);
+  text-decoration:none;
+  font-size:13px;
+  font-weight:600;
+  padding:7px 16px;
+  border-radius:99px;
+  border:1px solid var(--border);
+  background:var(--surface2);
+  transition:all 0.2s ease;
+}
+.nav-link-btn:hover{
+  color:var(--text);
+  border-color:rgba(255,255,255,0.2);
+}
+
+/* AUTH CARD */
+.auth-card{
+  width:100%;
+  max-width:440px;
+  background:rgba(19,20,26,0.92);
+  backdrop-filter:blur(20px);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:36px 32px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);
+  margin-top:60px;
+  animation:cardIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cardIn{
+  from{transform:translateY(20px);opacity:0;}
+  to{transform:translateY(0);opacity:1;}
+}
+
+.auth-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:var(--rose-dim);
+  color:var(--rose);
+  border:1px solid rgba(255,77,114,0.3);
+  font-size:11px;
+  font-weight:700;
+  padding:4px 12px;
+  border-radius:99px;
+  margin-bottom:16px;
+}
+
+.auth-title{
+  font-size:24px;
+  font-weight:800;
+  letter-spacing:-0.5px;
+  margin-bottom:6px;
+}
+
+.auth-sub{
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.5;
+  margin-bottom:28px;
+}
+
+/* FORM ELEMENTS */
+.fg{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-bottom:18px;
+}
+
+.flab{
+  font-size:12px;
+  font-weight:600;
+  color:var(--muted);
+}
+
+.input-wrap{
+  position:relative;
+  display:flex;
+  align-items:center;
+}
+
+.input-wrap .ico{
+  position:absolute;
+  left:14px;
+  font-size:15px;
+  color:var(--dim);
+}
+
+.inp{
+  width:100%;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:var(--rs);
+  padding:12px 14px 12px 42px;
+  font-size:13.5px;
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  outline:none;
+  transition:all 0.2s ease;
+}
+
+.inp:focus{
+  border-color:rgba(255,77,114,0.5);
+  box-shadow:0 0 14px rgba(255,77,114,0.15);
+}
+
+.inp::placeholder{
+  color:var(--dim);
+}
+
+.toggle-pwd{
+  position:absolute;
+  right:14px;
+  background:none;
+  border:none;
+  cursor:pointer;
+  font-size:15px;
+  color:var(--dim);
+}
+.toggle-pwd:hover{
+  color:var(--text);
+}
+
+.form-meta{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:12px;
+  margin-bottom:22px;
+}
+
+.remember-label{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--muted);
+  cursor:pointer;
+}
+
+.forgot-link{
+  color:var(--rose);
+  text-decoration:none;
+  font-weight:600;
+}
+.forgot-link:hover{
+  text-decoration:underline;
+}
+
+.btn{
+  width:100%;
+  padding:14px;
+  border-radius:var(--rs);
+  border:none;
+  cursor:pointer;
+  font-size:14px;
+  font-weight:700;
+  font-family:'DM Sans',sans-serif;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  transition:all 0.2s ease;
+}
+
+.btn-rose{
+  background:linear-gradient(135deg, #ff3d65, #ff6b8a);
+  color:#fff;
+  box-shadow:0 6px 20px rgba(255,77,114,0.35);
+}
+.btn-rose:hover{
+  transform:translateY(-1px);
+  box-shadow:0 8px 25px rgba(255,77,114,0.45);
+}
+
+.divider{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:24px 0;
+  color:var(--dim);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:1px;
+}
+.divider::before, .divider::after{
+  content:'';
+  flex:1;
+  height:1px;
+  background:var(--border);
+}
+
+.btn-demo{
+  background:rgba(77,159,255,0.12);
+  color:var(--blue);
+  border:1px solid rgba(77,159,255,0.3);
+}
+.btn-demo:hover{
+  background:rgba(77,159,255,0.22);
+  box-shadow:0 0 14px rgba(77,159,255,0.25);
+}
+
+.auth-footer-note{
+  margin-top:24px;
+  text-align:center;
+  font-size:12px;
+  color:var(--dim);
+  line-height:1.6;
+}
+
+.auth-footer-note a{
+  color:var(--rose);
+  font-weight:700;
+  text-decoration:none;
+}
+.auth-footer-note a:hover{
+  text-decoration:underline;
+}
+
+.error-alert{
+  background:rgba(255,77,114,0.12);
+  border:1px solid rgba(255,77,114,0.3);
+  color:var(--rose);
+  padding:10px 14px;
+  border-radius:var(--rs);
+  font-size:12.5px;
+  font-weight:500;
+  margin-bottom:18px;
+  display:none;
+  align-items:center;
+  gap:8px;
+}
+</style>
+</head>
+<body>
+
+<header class="auth-header-nav">
+  <a href="index.html" class="logo"><div class="logo-dot">🛡</div>SafeHer</a>
+  <a href="signup.html" class="nav-link-btn">Create Account ✨</a>
+</header>
+
+<main class="auth-card">
+  <div class="auth-badge">🔐 AUTHENTICATION GATEWAY</div>
+  <h1 class="auth-title">Welcome Back</h1>
+  <p class="auth-sub">Sign in to your personal safety hub, monitor live location telemetry & access MST Blockchain proofs.</p>
+
+  <div id="errorAlert" class="error-alert">
+    <span>⚠️</span>
+    <span id="errorMsg">Invalid credentials. Please check your email and password.</span>
+  </div>
+
+  <form id="loginForm" onsubmit="handleLogin(event)">
+    <div class="fg">
+      <label class="flab" for="loginEmail">Email Address</label>
+      <div class="input-wrap">
+        <span class="ico">📧</span>
+        <input class="inp" type="email" id="loginEmail" placeholder="name@example.com" required value="demo@safeher.org"/>
+      </div>
+    </div>
+
+    <div class="fg">
+      <label class="flab" for="loginPassword">Password</label>
+      <div class="input-wrap">
+        <span class="ico">🔒</span>
+        <input class="inp" type="password" id="loginPassword" placeholder="••••••••" required value="password123"/>
+        <button type="button" class="toggle-pwd" onclick="togglePasswordVisibility('loginPassword', this)">👁️</button>
+      </div>
+    </div>
+
+    <div class="form-meta">
+      <label class="remember-label">
+        <input type="checkbox" checked style="accent-color:var(--rose);"/> Remember session
+      </label>
+      <a href="javascript:void(0)" onclick="alert('Demo Mode: Use quick demo login or email demo@safeher.org / password123')" class="forgot-link">Forgot password?</a>
+    </div>
+
+    <button type="submit" class="btn btn-rose" id="loginBtn">
+      Sign In to Control Center →
+    </button>
+  </form>
+
+  <div class="divider">OR</div>
+
+  <button type="button" class="btn btn-demo" onclick="window.SafeHerAuth.quickDemoLogin()">
+    ⚡ Quick Demo Login (1-Click Access)
+  </button>
+
+  <div class="auth-footer-note">
+    Don't have an account yet? <a href="signup.html">Create a free SafeHer account</a>
+    <br/><span style="font-size:10.5px;color:var(--dim);margin-top:6px;display:inline-block;">Protected by MST Blockchain (Chain ID 91562037)</span>
+  </div>
+</main>
+
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script>
+function togglePasswordVisibility(id, btn) {
+  const inp = document.getElementById(id);
+  if (inp.type === "password") {
+    inp.type = "text";
+    btn.textContent = "🙈";
+  } else {
+    inp.type = "password";
+    btn.textContent = "👁️";
+  }
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const pwd = document.getElementById('loginPassword').value;
+  const alertEl = document.getElementById('errorAlert');
+  const alertMsg = document.getElementById('errorMsg');
+  const btn = document.getElementById('loginBtn');
+
+  alertEl.style.display = 'none';
+  btn.textContent = 'Authenticating...';
+  btn.disabled = true;
+
+  try {
+    const res = await window.SafeHerAuth.login(email, pwd);
+    if (res.success) {
+      btn.textContent = '✓ Authenticated! Loading...';
+      btn.style.background = 'var(--green)';
+      btn.style.color = '#071a0e';
+      setTimeout(() => {
+        window.location.href = 'home.html';
+      }, 500);
+    }
+  } catch (err) {
+    btn.textContent = 'Sign In to Control Center →';
+    btn.disabled = false;
+    alertMsg.textContent = err.message || "Authentication failed.";
+    alertEl.style.display = 'flex';
+  }
+}
+
+// Auto redirect if already logged in
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.SafeHerAuth && window.SafeHerAuth.isLoggedIn()) {
+    console.log("[SafeHerAuth] Already logged in. Redirecting to home.html");
+    window.location.href = 'home.html';
+  }
+});
+</script>
+</body>
+</html>

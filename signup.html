@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SafeHer — Create Emergency Account</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0b0c10;--surface:#13141a;--surface2:#1a1b24;--surface3:#22232f;
+  --border:rgba(255,255,255,0.08);
+  --rose:#ff4d72;--rose-dim:rgba(255,77,114,0.15);--rose-glow:rgba(255,77,114,0.35);
+  --amber:#ffb347;--amber-dim:rgba(255,179,71,0.15);
+  --green:#36d68a;--green-dim:rgba(54,214,138,0.12);
+  --blue:#4d9fff;--blue-dim:rgba(77,159,255,0.12);
+  --text:#f0f0f5;--muted:#8a8a9a;--dim:#5a5a6a;
+  --r:20px;--rs:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  background-image:
+    radial-gradient(circle at 85% 20%, rgba(54,214,138,0.12), transparent 45%),
+    radial-gradient(circle at 15% 80%, rgba(255,77,114,0.15), transparent 45%);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:30px 20px;
+}
+
+.auth-header-nav{
+  position:fixed;
+  top:0;left:0;right:0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 32px;
+  background:rgba(19,20,26,0.85);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  z-index:10;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-family:'Instrument Serif',serif;
+  font-size:22px;
+  text-decoration:none;
+  color:var(--text);
+}
+.logo-dot{
+  width:32px;height:32px;
+  background:var(--rose);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  box-shadow:0 0 16px var(--rose-glow);
+}
+
+.nav-link-btn{
+  color:var(--muted);
+  text-decoration:none;
+  font-size:13px;
+  font-weight:600;
+  padding:7px 16px;
+  border-radius:99px;
+  border:1px solid var(--border);
+  background:var(--surface2);
+  transition:all 0.2s ease;
+}
+.nav-link-btn:hover{
+  color:var(--text);
+  border-color:rgba(255,255,255,0.2);
+}
+
+/* AUTH CARD */
+.auth-card{
+  width:100%;
+  max-width:520px;
+  background:rgba(19,20,26,0.92);
+  backdrop-filter:blur(20px);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:36px 36px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);
+  margin-top:60px;
+  animation:cardIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cardIn{
+  from{transform:translateY(20px);opacity:0;}
+  to{transform:translateY(0);opacity:1;}
+}
+
+.auth-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:var(--green-dim);
+  color:var(--green);
+  border:1px solid rgba(54,214,138,0.3);
+  font-size:11px;
+  font-weight:700;
+  padding:4px 12px;
+  border-radius:99px;
+  margin-bottom:16px;
+}
+
+.auth-title{
+  font-size:24px;
+  font-weight:800;
+  letter-spacing:-0.5px;
+  margin-bottom:6px;
+}
+
+.auth-sub{
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.5;
+  margin-bottom:26px;
+}
+
+/* FORM ELEMENTS */
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+@media(max-width:480px){
+  .form-grid{grid-template-columns:1fr;}
+}
+
+.fg{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-bottom:16px;
+}
+.fg.full{
+  grid-column:1/-1;
+}
+
+.flab{
+  font-size:12px;
+  font-weight:600;
+  color:var(--muted);
+}
+
+.input-wrap{
+  position:relative;
+  display:flex;
+  align-items:center;
+}
+
+.input-wrap .ico{
+  position:absolute;
+  left:14px;
+  font-size:15px;
+  color:var(--dim);
+}
+
+.inp{
+  width:100%;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:var(--rs);
+  padding:11px 14px 11px 42px;
+  font-size:13px;
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  outline:none;
+  transition:all 0.2s ease;
+}
+
+.inp:focus{
+  border-color:rgba(54,214,138,0.5);
+  box-shadow:0 0 14px rgba(54,214,138,0.15);
+}
+
+.inp::placeholder{
+  color:var(--dim);
+}
+
+.btn{
+  width:100%;
+  padding:14px;
+  border-radius:var(--rs);
+  border:none;
+  cursor:pointer;
+  font-size:14px;
+  font-weight:700;
+  font-family:'DM Sans',sans-serif;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  transition:all 0.2s ease;
+  margin-top:8px;
+}
+
+.btn-green{
+  background:linear-gradient(135deg, #36d68a, #26a96a);
+  color:#071a0e;
+  box-shadow:0 6px 20px rgba(54,214,138,0.3);
+}
+.btn-green:hover{
+  transform:translateY(-1px);
+  box-shadow:0 8px 25px rgba(54,214,138,0.4);
+}
+
+.error-alert{
+  background:rgba(255,77,114,0.12);
+  border:1px solid rgba(255,77,114,0.3);
+  color:var(--rose);
+  padding:10px 14px;
+  border-radius:var(--rs);
+  font-size:12.5px;
+  font-weight:500;
+  margin-bottom:18px;
+  display:none;
+  align-items:center;
+  gap:8px;
+}
+
+.auth-footer-note{
+  margin-top:22px;
+  text-align:center;
+  font-size:12px;
+  color:var(--dim);
+  line-height:1.6;
+}
+
+.auth-footer-note a{
+  color:var(--green);
+  font-weight:700;
+  text-decoration:none;
+}
+.auth-footer-note a:hover{
+  text-decoration:underline;
+}
+</style>
+</head>
+<body>
+
+<header class="auth-header-nav">
+  <a href="index.html" class="logo"><div class="logo-dot">🛡</div>SafeHer</a>
+  <a href="login.html" class="nav-link-btn">Already Have Account? Sign In 🔑</a>
+</header>
+
+<main class="auth-card">
+  <div class="auth-badge">✨ NEW USER REGISTRATION</div>
+  <h1 class="auth-title">Create Emergency Profile</h1>
+  <p class="auth-sub">Set up your protective profile for live location tracking, emergency contact push alerts & MST Blockchain proofs.</p>
+
+  <div id="errorAlert" class="error-alert">
+    <span>⚠️</span>
+    <span id="errorMsg">Please fill in all required fields.</span>
+  </div>
+
+  <form id="signupForm" onsubmit="handleSignup(event)">
+    <div class="form-grid">
+      
+      <div class="fg full">
+        <label class="flab" for="regName">Full Name *</label>
+        <div class="input-wrap">
+          <span class="ico">👤</span>
+          <input class="inp" type="text" id="regName" placeholder="e.g. Priya Sharma" required />
+        </div>
+      </div>
+
+      <div class="fg full">
+        <label class="flab" for="regEmail">Email Address *</label>
+        <div class="input-wrap">
+          <span class="ico">📧</span>
+          <input class="inp" type="email" id="regEmail" placeholder="priya@example.com" required />
+        </div>
+      </div>
+
+      <div class="fg">
+        <label class="flab" for="regPhone">Your Phone Number</label>
+        <div class="input-wrap">
+          <span class="ico">📱</span>
+          <input class="inp" type="tel" id="regPhone" placeholder="+91 7061330201" value="+91 7061330201"/>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label class="flab" for="regGuardianName">Emergency Contact Name</label>
+        <div class="input-wrap">
+          <span class="ico">👥</span>
+          <input class="inp" type="text" id="regGuardianName" placeholder="e.g. Aarav (Brother)" value="Aarav Sharma (Brother)"/>
+        </div>
+      </div>
+
+      <div class="fg full">
+        <label class="flab" for="regGuardianPhone">Emergency Contact Phone Number</label>
+        <div class="input-wrap">
+          <span class="ico">📞</span>
+          <input class="inp" type="tel" id="regGuardianPhone" placeholder="+91 98765 43210" value="+91 9876543210"/>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label class="flab" for="regPassword">Password *</label>
+        <div class="input-wrap">
+          <span class="ico">🔒</span>
+          <input class="inp" type="password" id="regPassword" placeholder="••••••••" required />
+        </div>
+      </div>
+
+      <div class="fg">
+        <label class="flab" for="regConfirm">Confirm Password *</label>
+        <div class="input-wrap">
+          <span class="ico">🔒</span>
+          <input class="inp" type="password" id="regConfirm" placeholder="••••••••" required />
+        </div>
+      </div>
+
+    </div>
+
+    <button type="submit" class="btn btn-green" id="signupBtn">
+      Create Account & Launch Dashboard →
+    </button>
+  </form>
+
+  <div class="auth-footer-note">
+    Already registered? <a href="login.html">Sign in to your account</a>
+    <br/><span style="font-size:10.5px;color:var(--dim);margin-top:6px;display:inline-block;">Powered by MST Testnet Blockchain (Chain ID 91562037)</span>
+  </div>
+</main>
+
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script>
+async function handleSignup(e) {
+  e.preventDefault();
+  const fullName = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const phone = document.getElementById('regPhone').value.trim();
+  const emergencyContactName = document.getElementById('regGuardianName').value.trim();
+  const emergencyContactPhone = document.getElementById('regGuardianPhone').value.trim();
+  const pwd = document.getElementById('regPassword').value;
+  const confirmPwd = document.getElementById('regConfirm').value;
+
+  const alertEl = document.getElementById('errorAlert');
+  const alertMsg = document.getElementById('errorMsg');
+  const btn = document.getElementById('signupBtn');
+
+  alertEl.style.display = 'none';
+
+  if (pwd !== confirmPwd) {
+    alertMsg.textContent = "Passwords do not match. Please re-enter your password.";
+    alertEl.style.display = 'flex';
+    return;
+  }
+
+  if (pwd.length < 6) {
+    alertMsg.textContent = "Password must be at least 6 characters long.";
+    alertEl.style.display = 'flex';
+    return;
+  }
+
+  btn.textContent = 'Registering Account...';
+  btn.disabled = true;
+
+  try {
+    const res = await window.SafeHerAuth.register({
+      fullName,
+      email,
+      password: pwd,
+      phone,
+      emergencyContactName,
+      emergencyContactPhone
+    });
+
+    if (res.success) {
+      btn.textContent = '✓ Account Created! Launching...';
+      btn.style.background = 'var(--green)';
+      btn.style.color = '#071a0e';
+      setTimeout(() => {
+        window.location.href = 'home.html';
+      }, 500);
+    }
+  } catch (err) {
+    btn.textContent = 'Create Account & Launch Dashboard →';
+    btn.disabled = false;
+    alertMsg.textContent = err.message || "Registration failed.";
+    alertEl.style.display = 'flex';
+  }
+}
+</script>
+</body>
+</html>
