@@ -1162,11 +1162,16 @@ async function triggerSOS(){
 }
 
 function showPushPreview(){
+  const user = window.SafeHerAuth ? window.SafeHerAuth.getUser() : null;
+  const userName = user ? user.fullName : 'Registered User';
+  const userPhone = user ? user.phone : '+91 7061330201';
+
   var txHashHtml = latestBlockchainProof ? 
     '<br/>MST Tx Hash: <a href="'+latestBlockchainProof.explorerUrl+'" target="_blank" style="color:var(--green);word-break:break-all;">'+latestBlockchainProof.transactionHash+'</a>' : '';
 
   document.getElementById('pushBody').innerHTML=
-    'Location: <strong>'+currentCityName+'</strong><br/>'
+    'User: <strong style="color:var(--text);">'+userName+'</strong> ('+userPhone+')<br/>'
+    +'Location: <strong>'+(currentCityName || 'Live GPS Coordinates')+'</strong><br/>'
     +'Lat: <strong style="color:var(--rose);">'+gLat.toFixed(4)+'°N</strong> · Lng: <strong style="color:var(--rose);">'+gLng.toFixed(4)+'°E</strong><br/>'
     +'Device: <span style="color:var(--muted);font-size:10.5px;">'+DID+'</span><br/>'
     +'Maps: <a href="https://maps.google.com/?q='+gLat.toFixed(4)+','+gLng.toFixed(4)+'" target="_blank" style="color:var(--blue);">maps.google.com/?q='+gLat.toFixed(4)+','+gLng.toFixed(4)+'</a>'
