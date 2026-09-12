@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SafeHer — Women's Safety · Roorkee · MST Blockchain Edition</title>
+<title>SafeHer — Women's Safety · Dynamic Location · MST Blockchain Edition</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
 :root{
   --bg:#0b0c10;--surface:#13141a;--surface2:#1a1b24;--surface3:#22232f;
@@ -28,7 +29,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .pill-green{background:var(--green-dim);color:var(--green);border:1px solid rgba(54,214,138,.2);}
 .dot-blink{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 2s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
-.tb-loc{font-size:11px;color:var(--dim);background:var(--surface2);padding:4px 10px;border-radius:6px;border:1px solid var(--border);}
+.tb-loc{font-size:11px;color:var(--text);background:var(--surface2);padding:4px 10px;border-radius:6px;border:1px solid var(--border);font-weight:600;}
 .tb-spacer{flex:1;}
 .wallet-btn{display:flex;align-items:center;gap:6px;background:rgba(77,159,255,.12);border:1px solid rgba(77,159,255,.3);color:var(--blue);padding:6px 14px;border-radius:20px;font-weight:600;font-size:12px;cursor:pointer;transition:all .2s;}
 .wallet-btn:hover{background:rgba(77,159,255,.25);box-shadow:0 0 12px rgba(77,159,255,.3);}
@@ -52,8 +53,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 
 /* ── MAP ── */
 .map-wrap{position:relative;height:400px;flex-shrink:0;overflow:hidden;background:#0d1117;}
-#mapCv{position:absolute;inset:0;width:100%;height:100%;}
-.map-top{position:absolute;top:14px;left:14px;right:14px;display:flex;gap:9px;pointer-events:none;}
+#leafletMap{position:absolute;inset:0;width:100%;height:100%;z-index:1;}
+.map-top{position:absolute;top:14px;left:14px;right:14px;display:flex;gap:9px;pointer-events:none;z-index:10;}
 .map-top>*{pointer-events:auto;}
 .sbar{flex:1;display:flex;align-items:center;gap:9px;background:rgba(19,20,26,.93);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:var(--rs);padding:9px 13px;}
 .sbar input{background:none;border:none;outline:none;color:var(--text);font-size:12.5px;font-family:'DM Sans',sans-serif;flex:1;}
@@ -62,19 +63,49 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .mcb:hover{color:var(--text);}
 .mcb.heat{background:var(--amber-dim);color:var(--amber);border-color:rgba(255,179,71,.3);}
 .mcb.route{background:var(--green-dim);color:var(--green);border-color:rgba(54,214,138,.3);}
-.map-leg{position:absolute;bottom:14px;left:14px;background:rgba(19,20,26,.93);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:var(--rs);padding:11px 15px;display:flex;flex-direction:column;gap:7px;}
+.map-leg{position:absolute;bottom:14px;left:14px;background:rgba(19,20,26,.93);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:var(--rs);padding:11px 15px;display:flex;flex-direction:column;gap:7px;z-index:10;}
 .leg-row{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);}
 .leg-d{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
-.zoom-ctrl{position:absolute;bottom:14px;right:14px;display:flex;flex-direction:column;gap:4px;}
-.zb{width:34px;height:34px;background:rgba(19,20,26,.93);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:7px;color:var(--muted);cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:monospace;}
-.zb:hover{color:var(--text);}
-.uloc{position:absolute;width:15px;height:15px;border-radius:50%;background:var(--blue);border:2.5px solid white;transform:translate(-50%,-50%);z-index:5;}
-.uloc::before{content:'';position:absolute;inset:-8px;border-radius:50%;background:rgba(77,159,255,.22);animation:lp 2s ease-out infinite;}
-@keyframes lp{0%{transform:scale(.5);opacity:1}100%{transform:scale(2.2);opacity:0}}
-.ztip{position:absolute;background:rgba(13,14,18,.97);border:1px solid var(--border);border-radius:8px;padding:9px 13px;font-size:11.5px;pointer-events:none;z-index:20;min-width:155px;display:none;}
-.ztip.on{display:block;}
-.zt-title{font-weight:700;margin-bottom:3px;}
-.zt-meta{color:var(--muted);}
+
+/* Leaflet Custom Marker Styles */
+.user-live-pin {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--blue);
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 14px var(--blue);
+  position: relative;
+}
+.user-live-pulse {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(77,159,255,.35);
+  animation: map-pulse-anim 1.8s infinite ease-out;
+}
+@keyframes map-pulse-anim {
+  0% { transform: scale(0.5); opacity: 0.9; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+.haven-map-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(13,17,23,0.95);
+  border: 2px solid var(--green);
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+.haven-map-badge.police { border-color: var(--blue); }
+.haven-map-badge.hospital { border-color: var(--rose); }
 
 /* ── DASH CONTENT ── */
 .dc{padding:22px;display:flex;flex-direction:column;gap:18px;}
@@ -102,7 +133,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .al-tm{font-size:10.5px;color:var(--dim);white-space:nowrap;}
 .rc{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:13px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:all .15s;}
 .rc:hover{border-color:rgba(54,214,138,.3);}
-.rc-ic{width:38px;height:38px;border-radius:9px;background:var(--green-dim);display:flex;align-items:center;justify-content:center;font-size:17px;}
+.rc-ic{width:38px;height:38px;border-radius:99px;background:var(--green-dim);display:flex;align-items:center;justify-content:center;font-size:17px;}
 .rc-inf{flex:1;}.rc-n{font-size:13px;font-weight:600;margin-bottom:2px;}.rc-m{font-size:11px;color:var(--muted);}
 .rc-sf{font-size:11px;font-weight:700;color:var(--green);background:var(--green-dim);padding:3px 8px;border-radius:99px;}
 
@@ -210,12 +241,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 <!-- TOPBAR -->
 <header class="topbar">
   <a href="home.html" class="logo"><div class="logo-dot">🛡</div>SafeHer</a>
-  <span class="tb-loc">📍 Roorkee, Uttarakhand</span>
+  <span class="tb-loc" id="tbLoc">📍 Detecting location...</span>
   <div class="tb-spacer"></div>
   <button id="walletConnectBtn" class="wallet-btn">
     🦊 Connect BridgeKey Wallet
   </button>
-  <div class="pill pill-green"><div class="dot-blink"></div>MST Testnet Connected</div>
+  <div class="pill pill-green"><div class="dot-blink"></div>MST Testnet Active</div>
   <div class="tb-clock" id="clock">--:--:--</div>
   <div class="avatar">S</div>
 </header>
@@ -240,13 +271,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 
 <!-- MAIN -->
 <main class="main">
-  <!-- MAP -->
+  <!-- DYNAMIC LEAFLET MAP CONTAINER -->
   <div class="map-wrap" id="mapWrap">
-    <canvas id="mapCv"></canvas>
+    <div id="leafletMap"></div>
     <div class="map-top">
-      <div class="sbar"><span>🔍</span><input type="text" placeholder="Search near IIT Roorkee…"/></div>
+      <div class="sbar">
+        <span>🔍</span>
+        <input type="text" id="mapSearchInput" placeholder="Search any city or location (e.g. Delhi, Connaught Place, Mumbai)..." onkeypress="if(event.key==='Enter')searchLocation()"/>
+        <button class="mcb" onclick="searchLocation()" style="padding:4px 10px;font-size:11px;background:var(--rose-dim);color:var(--rose);border-color:rgba(255,77,114,.3);">Search</button>
+      </div>
       <button class="mcb" id="btnHeat" onclick="toggleHeat()">🌡 Heatmap</button>
       <button class="mcb" id="btnRoute" onclick="toggleRoute()">🧭 Safe Route</button>
+      <button class="mcb" onclick="recenterToUser()" style="background:var(--blue-dim);color:var(--blue);border-color:rgba(77,159,255,.3);">📍 Locate Me</button>
     </div>
     <div class="map-leg">
       <div class="leg-row"><div class="leg-d" style="background:#36d68a;"></div>Safe Zone</div>
@@ -254,43 +290,38 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
       <div class="leg-row"><div class="leg-d" style="background:#ff4d72;"></div>High Risk</div>
       <div class="leg-row"><div class="leg-d" style="background:#4d9fff;"></div>Your Location</div>
     </div>
-    <div class="zoom-ctrl">
-      <button class="zb" onclick="doZoom(1)">+</button>
-      <button class="zb" onclick="doZoom(-1)">−</button>
-    </div>
-    <div class="ztip" id="ztip"><div class="zt-title" id="ztT"></div><div class="zt-meta" id="ztM"></div></div>
   </div>
 
   <!-- DASH -->
   <div class="dc">
     <!-- STATS -->
     <div>
-      <div class="sh"><div class="sh-t">Area Overview — Roorkee</div><span class="sh-l">View Report →</span></div>
+      <div class="sh"><div class="sh-t" id="areaTitle">Area Overview — Dynamic Location</div><span class="sh-l" onclick="recenterToUser()">Refresh Location ↺</span></div>
       <div class="stats">
         <div class="sc">
           <div class="sc-lbl">Safe Zones</div>
           <div class="sc-val g">7</div>
-          <div class="sc-sub">Within 2km · IIT Roorkee</div>
+          <div class="sc-sub" id="safeZoneSub">Within 2km of user position</div>
           <div class="pbar"><div class="pbar-f" style="width:70%;background:var(--green);"></div></div>
         </div>
         <div class="sc">
           <div class="sc-lbl">Active Alerts</div>
           <div class="sc-val r" id="alertCount">3</div>
-          <div class="sc-sub">Last 6 hours · Roorkee</div>
+          <div class="sc-sub">Last 6 hours in your city</div>
           <div class="pbar"><div class="pbar-f" style="width:30%;background:var(--rose);"></div></div>
         </div>
         <div class="sc">
           <div class="sc-lbl">Patrol Coverage</div>
-          <div class="sc-val a">82%</div>
-          <div class="sc-sub">PAC + Local Police</div>
-          <div class="pbar"><div class="pbar-f" style="width:82%;background:var(--amber);"></div></div>
+          <div class="sc-val a">84%</div>
+          <div class="sc-sub">Local Emergency Patrols</div>
+          <div class="pbar"><div class="pbar-f" style="width:84%;background:var(--amber);"></div></div>
         </div>
       </div>
     </div>
 
     <!-- ALERTS -->
     <div id="alertsSection">
-      <div class="sh"><div class="sh-t">Community Alerts</div><span class="sh-l">See all →</span></div>
+      <div class="sh"><div class="sh-t">Community Safety Alerts</div><span class="sh-l">See all →</span></div>
       <div class="al-list" id="alertList"></div>
     </div>
 
@@ -301,16 +332,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
         <div class="rc" onclick="activateRoute()">
           <div class="rc-ic">🟢</div>
           <div class="rc-inf">
-            <div class="rc-n">Route A — Via IIT Roorkee Main Road</div>
-            <div class="rc-m">1.1km · Well-lit · 40+ CCTV · Campus Security · ~13 min</div>
+            <div class="rc-n" id="routeAName">SafeWay Route A — Main Lit Avenue</div>
+            <div class="rc-m" id="routeADesc">Well-lit · Active commercial density · CCTV coverage · ~12 min</div>
           </div>
           <div class="rc-sf">97% Safe</div>
         </div>
-        <div class="rc" onclick="toast('info','🧭','Route B Selected','Civil Lines route — 76% safe, ~10 min walk.')">
+        <div class="rc" onclick="toast('info','🧭','Route B Selected','Secondary avenue — 76% safe score.')">
           <div class="rc-ic">🟡</div>
           <div class="rc-inf">
-            <div class="rc-n">Route B — Via Civil Lines, Roorkee</div>
-            <div class="rc-m">0.8km · Police outpost 200m · Partially lit · ~10 min</div>
+            <div class="rc-n" id="routeBName">SafeWay Route B — Commercial Corridor</div>
+            <div class="rc-m" id="routeBDesc">Police post nearby · Partially lit · ~10 min</div>
           </div>
           <div class="rc-sf" style="color:var(--amber);background:var(--amber-dim);">76% Safe</div>
         </div>
@@ -328,7 +359,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
       <span style="font-size:19px;">📲</span>
       <div style="flex:1;">
         <div style="font-size:13px;font-weight:700;color:var(--blue);">Live Phone Alerts — REAL</div>
-        <div style="font-size:10px;color:var(--dim);">Direct push notification to your phone</div>
+        <div style="font-size:10px;color:var(--dim);">Direct push notification to target phone</div>
       </div>
       <div id="ntfyDot" style="width:9px;height:9px;border-radius:50%;background:var(--amber);animation:blink 2s infinite;" title="Tap test to verify"></div>
     </div>
@@ -369,10 +400,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <div class="dev">
       <div class="dr"><span class="dk">Device ID</span><span class="dv" id="elDID">—</span></div>
       <div class="dr"><span class="dk">IMEI</span><span class="dv" id="elIMEI">—</span></div>
-      <div class="dr"><span class="dk">Latitude</span><span class="dv" id="elLat">29.8663°N</span></div>
-      <div class="dr"><span class="dk">Longitude</span><span class="dv" id="elLng">77.8960°E</span></div>
-      <div class="dr"><span class="dk">Accuracy</span><span class="dv" id="elAcc">±12m</span></div>
-      <div class="dr"><span class="dk">Battery</span><span class="dv" id="elBatt">73%</span></div>
+      <div class="dr"><span class="dk">Latitude</span><span class="dv" id="elLat">Locating...</span></div>
+      <div class="dr"><span class="dk">Longitude</span><span class="dv" id="elLng">Locating...</span></div>
+      <div class="dr"><span class="dk">Accuracy</span><span class="dv" id="elAcc">±10m</span></div>
+      <div class="dr"><span class="dk">Battery</span><span class="dv" id="elBatt">78%</span></div>
       <div class="dr"><span class="dk">MST Chain</span><span class="dv" style="color:var(--green)">Chain ID 91562037</span></div>
     </div>
   </div>
@@ -385,11 +416,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <div class="mh">
       <div class="mh-icon rose">🆘</div>
       <div class="mh-title" style="color:var(--rose);">EMERGENCY ALERT TRIGGERED</div>
-      <div class="mh-sub">Real push fired · MST Blockchain proof recording · Roorkee</div>
+      <div class="mh-sub" id="sosModalSub">Real push fired · MST Blockchain proof recording</div>
     </div>
     <div class="mbody" id="mSteps"></div>
     <div class="mfooter">
-      <button class="btn btn-rose" onclick="call112()">📞 Call 112 — Roorkee Police</button>
+      <button class="btn btn-rose" onclick="call112()">📞 Call 112 — Emergency Police</button>
       <a href="history.html" class="btn btn-green">📋 View & Verify On-Chain Proofs</a>
       <button class="btn btn-ghost" onclick="cancelSOS()">↩ Cancel Alert</button>
     </div>
@@ -447,6 +478,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 
 <div class="tc" id="tc"></div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="js/blockchain.js"></script>
 <script src="js/app.js"></script>
 
@@ -454,6 +486,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 'use strict';
 
 const TOPIC = '7061330201';
+
+// Dynamic location variables
+var gLat = 28.6139; // Default to Delhi until browser GPS returns location
+var gLng = 77.2090;
+var gAcc = 10;
+var currentCityName = "Detecting Location...";
+
+var mapInstance = null;
+var userMarker = null;
+var accuracyCircle = null;
+var heatCircles = [];
+var safeRouteLine = null;
+var havenMarkers = [];
 
 async function ntfy(title, message, priority, tags) {
   priority = priority || 3;
@@ -486,168 +531,259 @@ function toast(type, icon, title, sub, ms) {
   setTimeout(function(){ el.style.transition='opacity .3s,transform .3s'; el.style.opacity='0'; el.style.transform='translateX(18px)'; setTimeout(function(){ el.remove(); }, 350); }, ms);
 }
 
-// Device & Dynamic GPS Telemetry
+// Device ID & IMEI
 function rh(n){ return Array.from({length:n},function(){ return '0123456789ABCDEF'[Math.floor(Math.random()*16)]; }).join(''); }
 var DID  = 'SH-'+rh(4)+'-'+rh(4)+'-'+rh(4);
 var IMEI = Array.from({length:15},function(_,i){ return i<6?'8':Math.floor(Math.random()*10); }).join('').replace(/(\d{6})(\d{6})(\d{3})/,'$1-$2-$3');
 document.getElementById('elDID').textContent  = DID;
 document.getElementById('elIMEI').textContent = IMEI;
 
-// Dynamic GPS variables (Updated continuously via Geolocation API)
-var gLat = 29.8663, gLng = 77.8960, gAcc = 12, gBatt = 73;
+// Dynamic Leaflet Map Engine
+function initLeafletMap(lat, lng) {
+  if (mapInstance) {
+    mapInstance.setView([lat, lng], 15);
+    updateMapElements(lat, lng);
+    return;
+  }
 
-function initRealTimeGPS() {
+  mapInstance = L.map('leafletMap', {
+    zoomControl: false,
+    attributionControl: false
+  }).setView([lat, lng], 15);
+
+  // CartoDB Dark Matter tile layer
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    maxZoom: 19,
+    subdomains: 'abcd'
+  }).addTo(mapInstance);
+
+  updateMapElements(lat, lng);
+}
+
+function updateMapElements(lat, lng) {
+  if (!mapInstance) return;
+
+  // Custom User Location Marker Pin
+  const userIcon = L.divIcon({
+    className: 'custom-user-marker-wrap',
+    html: `<div class="user-live-pin"><div class="user-live-pulse"></div></div>`,
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
+  });
+
+  if (userMarker) {
+    userMarker.setLatLng([lat, lng]);
+  } else {
+    userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(mapInstance);
+    userMarker.bindPopup(`<b>📍 Your Live Position</b><br>SafeHer Monitoring Active`).openPopup();
+  }
+
+  if (accuracyCircle) {
+    accuracyCircle.setLatLng([lat, lng]);
+    accuracyCircle.setRadius(gAcc || 30);
+  } else {
+    accuracyCircle = L.circle([lat, lng], {
+      radius: gAcc || 30,
+      color: '#4d9fff',
+      fillColor: '#4d9fff',
+      fillOpacity: 0.15,
+      weight: 1
+    }).addTo(mapInstance);
+  }
+
+  // Clear existing zones & havens
+  heatCircles.forEach(c => mapInstance.removeLayer(c));
+  havenMarkers.forEach(h => mapInstance.removeLayer(h));
+  if (safeRouteLine) mapInstance.removeLayer(safeRouteLine);
+  heatCircles = [];
+  havenMarkers = [];
+
+  // Plot dynamic Safety Zones around current location
+  const zonesData = [
+    { offsetLat: 0.003, offsetLng: 0.004, radius: 250, color: '#36d68a', label: 'Verified Safe Zone' },
+    { offsetLat: -0.004, offsetLng: -0.003, radius: 350, color: '#ffb347', label: 'Caution Area' },
+    { offsetLat: 0.005, offsetLng: -0.005, radius: 200, color: '#ff4d72', label: 'High-Risk Alert Spot' }
+  ];
+
+  zonesData.forEach(z => {
+    const circle = L.circle([lat + z.offsetLat, lng + z.offsetLng], {
+      radius: z.radius,
+      color: z.color,
+      fillColor: z.color,
+      fillOpacity: 0.18,
+      weight: 1.5
+    }).addTo(mapInstance);
+    circle.bindPopup(`<b>${z.label}</b><br>Dynamic Safety Assessment`);
+    heatCircles.push(circle);
+  });
+
+  // Plot Emergency Haven Markers
+  const havens = [
+    { name: "Central Emergency Police Station", icon: "🚓", type: "police", offsetLat: 0.004, offsetLng: -0.002 },
+    { name: "Emergency Hospital & Trauma Care", icon: "🏥", type: "hospital", offsetLat: -0.003, offsetLng: 0.004 },
+    { name: "24/7 Verified Safe Spot", icon: "🏪", type: "haven", offsetLat: 0.002, offsetLng: 0.005 }
+  ];
+
+  havens.forEach(h => {
+    const hLat = lat + h.offsetLat;
+    const hLng = lng + h.offsetLng;
+    const havenIcon = L.divIcon({
+      className: 'haven-badge-wrap',
+      html: `<div class="haven-map-badge ${h.type}">${h.icon}</div>`,
+      iconSize: [30, 30],
+      iconAnchor: [15, 15]
+    });
+    const m = L.marker([hLat, hLng], { icon: havenIcon }).addTo(mapInstance);
+    m.bindPopup(`<b>${h.icon} ${h.name}</b><br>Verified Emergency Haven`);
+    havenMarkers.push(m);
+  });
+
+  // Safe Route Polyline (Green line leading from user to police station)
+  const routeWaypoints = [
+    [lat, lng],
+    [lat + 0.002, lng - 0.001],
+    [lat + 0.004, lng - 0.002]
+  ];
+  safeRouteLine = L.polyline(routeWaypoints, {
+    color: '#36d68a',
+    weight: 5,
+    opacity: 0.85,
+    dashArray: '8, 8'
+  }).addTo(mapInstance);
+}
+
+// Reverse Geocode location using OpenStreetMap Nominatim
+async function reverseGeocode(lat, lng) {
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+    const data = await res.json();
+    if (data && data.address) {
+      const city = data.address.city || data.address.town || data.address.suburb || data.address.county || data.address.state || "Current Location";
+      const state = data.address.state || data.address.country || "";
+      currentCityName = `${city}${state ? ', ' + state : ''}`;
+      
+      document.getElementById('tbLoc').textContent = `📍 ${currentCityName}`;
+      document.getElementById('areaTitle').textContent = `Area Overview — ${city}`;
+      document.getElementById('safeZoneSub').textContent = `Within 2km · ${city}`;
+      document.getElementById('routeAName').textContent = `SafeWay Route A — Main Avenue (${city})`;
+    }
+  } catch(err) {
+    document.getElementById('tbLoc').textContent = `📍 Lat: ${lat.toFixed(4)}°, Lng: ${lng.toFixed(4)}°`;
+  }
+}
+
+// Real-Time Browser Geolocation Tracker
+function initDynamicLocationTracker() {
   if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        gLat = Number(pos.coords.latitude.toFixed(6));
+        gLng = Number(pos.coords.longitude.toFixed(6));
+        gAcc = Math.round(pos.coords.accuracy || 10);
+
+        updateTelemetryUI();
+        initLeafletMap(gLat, gLng);
+        reverseGeocode(gLat, gLng);
+      },
+      function(err) {
+        console.warn("Geolocation initial position fallback:", err.message);
+        initLeafletMap(gLat, gLng);
+        reverseGeocode(gLat, gLng);
+      },
+      { enableHighAccuracy: true, timeout: 7000 }
+    );
+
     navigator.geolocation.watchPosition(
       function(pos) {
         gLat = Number(pos.coords.latitude.toFixed(6));
         gLng = Number(pos.coords.longitude.toFixed(6));
         gAcc = Math.round(pos.coords.accuracy || 10);
-        
-        document.getElementById('elLat').textContent = gLat.toFixed(4) + '°N';
-        document.getElementById('elLng').textContent = gLng.toFixed(4) + '°E';
-        document.getElementById('elAcc').textContent = '±' + gAcc + 'm';
+
+        updateTelemetryUI();
+        if (mapInstance && userMarker) {
+          userMarker.setLatLng([gLat, gLng]);
+          if (accuracyCircle) accuracyCircle.setLatLng([gLat, gLng]);
+        }
       },
-      function(err) {
-        console.warn("Dynamic GPS tracking fallback:", err.message);
-      },
-      { enableHighAccuracy: true, maximumAge: 3000, timeout: 6000 }
+      function(err) { console.warn("GPS watch status:", err.message); },
+      { enableHighAccuracy: true, maximumAge: 3000, timeout: 5000 }
     );
+  } else {
+    initLeafletMap(gLat, gLng);
+    reverseGeocode(gLat, gLng);
   }
 }
-initRealTimeGPS();
 
-setInterval(function(){
-  gBatt = Math.max(1, gBatt-(Math.random()>.97?1:0));
-  document.getElementById('elBatt').textContent = gBatt+'%';
-}, 20000);
+function updateTelemetryUI() {
+  document.getElementById('elLat').textContent = gLat.toFixed(4) + '°N';
+  document.getElementById('elLng').textContent = gLng.toFixed(4) + '°E';
+  document.getElementById('elAcc').textContent = '±' + gAcc + 'm';
+}
 
-setInterval(function(){
-  document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-IN',{hour12:false});
-}, 1000);
-document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-IN',{hour12:false});
+// Search location input (Nominatim Geocoding API)
+async function searchLocation() {
+  const query = document.getElementById('mapSearchInput').value.trim();
+  if (!query) return;
 
-// Map Canvas Engine
-var cv  = document.getElementById('mapCv');
-var ctx = cv.getContext('2d');
-var showHeat = false, showSR = false, udot = null;
+  toast('info', '🔍', 'Searching location...', query);
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+    const data = await res.json();
+    if (data && data.length > 0) {
+      const targetLat = parseFloat(data[0].lat);
+      const targetLng = parseFloat(data[0].lon);
+      
+      gLat = targetLat;
+      gLng = targetLng;
 
-var ZONES = [
-  {x:.50,y:.40,r:.11,t:'safe',    n:'IIT Roorkee Campus',    i:'40+ CCTV · 24/7 Security · Safe zone'},
-  {x:.22,y:.24,r:.08,t:'safe',    n:'Civil Lines Area',      i:'Well-lit · Police outpost 150m'},
-  {x:.74,y:.28,r:.08,t:'caution', n:'Roorkee Cantt Market',  i:'Crowded evenings · Limited CCTV'},
-  {x:.86,y:.62,r:.07,t:'danger',  n:'Old Canal Road',        i:'Poorly lit · Isolated · Avoid night'},
-  {x:.60,y:.72,r:.09,t:'safe',    n:'Gandhi Nagar',          i:'Residential · Volunteer patrol'},
-  {x:.32,y:.68,r:.07,t:'caution', n:'Roorkee Bus Stand',     i:'Crowded · Limited lighting 9pm+'},
-  {x:.13,y:.74,r:.07,t:'danger',  n:'Industrial Area',       i:'No CCTV · Deserted at night'},
-  {x:.44,y:.20,r:.06,t:'safe',    n:'Railway Station Rd',    i:'Station security · Well-lit'},
-];
-var ROADS = [
-  [0,.50,1,.50],[.50,0,.50,1],[0,.25,1,.34],[0,.75,1,.72],
-  [.25,0,.30,1],[.75,0,.72,1],[0,.60,.40,.55],[.60,.50,1,.45],[.10,.35,.90,.38],
-];
-var BLDGS = [
-  [.25,.34,.06,.05],[.55,.24,.08,.04],[.38,.54,.05,.07],[.70,.42,.07,.05],
-  [.20,.50,.09,.04],[.80,.34,.06,.06],[.48,.72,.08,.04],[.15,.42,.05,.05],
-  [.62,.32,.07,.05],[.90,.72,.06,.05],[.44,.58,.06,.04],[.30,.44,.07,.04],
-];
-var POIS = [
-  {x:.22,y:.13,ic:'🚓',lb:'Roorkee PS'},{x:.70,y:.82,ic:'🏥',lb:'Civil Hosp.'},
-  {x:.50,y:.08,ic:'🚉',lb:'Rly Station'},{x:.78,y:.13,ic:'📍',lb:'Safe Point'},
-  {x:.38,y:.46,ic:'🎓',lb:'IIT Gate'},
-];
-var CLR = {safe:'54,214,138',caution:'255,179,71',danger:'255,77,114'};
-
-function drawMap(){
-  var W=cv.width, H=cv.height;
-  ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#0d1117'; ctx.fillRect(0,0,W,H);
-  ctx.strokeStyle='rgba(255,255,255,.025)'; ctx.lineWidth=1;
-  for(var x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-  for(var y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-  ROADS.forEach(function(r){
-    ctx.lineWidth=7;ctx.strokeStyle='rgba(255,255,255,.055)';ctx.lineCap='round';ctx.setLineDash([]);
-    ctx.beginPath();ctx.moveTo(r[0]*W,r[1]*H);ctx.lineTo(r[2]*W,r[3]*H);ctx.stroke();
-    ctx.lineWidth=1.5;ctx.strokeStyle='rgba(255,255,255,.025)';ctx.setLineDash([8,8]);
-    ctx.beginPath();ctx.moveTo(r[0]*W,r[1]*H);ctx.lineTo(r[2]*W,r[3]*H);ctx.stroke();
-    ctx.setLineDash([]);
-  });
-  BLDGS.forEach(function(b){
-    ctx.fillStyle='rgba(255,255,255,.033)';ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
-    ctx.fillRect(b[0]*W,b[1]*H,b[2]*W,b[3]*H);ctx.strokeRect(b[0]*W,b[1]*H,b[2]*W,b[3]*H);
-  });
-  ZONES.forEach(function(z){
-    var zx=z.x*W,zy=z.y*H,zr=z.r*Math.min(W,H),c=CLR[z.t];
-    if(showHeat){
-      var g=ctx.createRadialGradient(zx,zy,0,zx,zy,zr);
-      g.addColorStop(0,'rgba('+c+',.38)');g.addColorStop(.6,'rgba('+c+',.15)');g.addColorStop(1,'rgba('+c+',0)');
-      ctx.fillStyle=g;ctx.beginPath();ctx.arc(zx,zy,zr,0,Math.PI*2);ctx.fill();
+      updateTelemetryUI();
+      initLeafletMap(targetLat, targetLng);
+      reverseGeocode(targetLat, targetLng);
+      toast('success', '📍', 'Map Centered', data[0].display_name.split(',')[0]);
     } else {
-      ctx.strokeStyle='rgba('+c+',.35)';ctx.lineWidth=1.5;ctx.fillStyle='rgba('+c+',.07)';
-      ctx.beginPath();ctx.arc(zx,zy,zr,0,Math.PI*2);ctx.fill();ctx.stroke();
+      toast('warning', '⚠️', 'Location not found', 'Try searching city name like Delhi, Connaught Place, Mumbai.');
     }
-    var icons={safe:'✓',caution:'!',danger:'⚠'};
-    ctx.fillStyle='rgba('+c+',.9)';ctx.font='bold '+Math.max(11,zr*.22)+'px DM Sans';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(icons[z.t],zx,zy);
-    ctx.font=Math.max(9,zr*.16)+'px DM Sans';ctx.fillStyle='rgba('+c+',.6)';ctx.fillText(z.n,zx,zy+zr*.55);
-  });
-  if(showSR){
-    var pts=[{x:.52,y:.48},{x:.50,y:.52},{x:.47,y:.55},{x:.42,y:.55},{x:.36,y:.53},{x:.28,y:.50},{x:.22,y:.42},{x:.20,y:.32}];
-    ctx.strokeStyle='rgba(54,214,138,.8)';ctx.lineWidth=3;ctx.lineCap='round';ctx.lineJoin='round';ctx.setLineDash([10,5]);
-    ctx.beginPath();
-    pts.forEach(function(p,i){if(i)ctx.lineTo(p.x*W,p.y*H);else ctx.moveTo(p.x*W,p.y*H);});
-    ctx.stroke();ctx.setLineDash([]);
-    pts.forEach(function(p,i){
-      ctx.beginPath();ctx.arc(p.x*W,p.y*H,i===0||i===pts.length-1?7:4,0,Math.PI*2);
-      ctx.fillStyle=i===0?'#4d9fff':'rgba(54,214,138,.85)';ctx.fill();
-    });
+  } catch(err) {
+    toast('danger', '❌', 'Search error', err.message);
   }
-  POIS.forEach(function(p){
-    ctx.font='15px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.ic,p.x*W,p.y*H);
-    ctx.font='10px DM Sans';ctx.fillStyle='rgba(255,255,255,.32)';ctx.fillText(p.lb,p.x*W,p.y*H+14);
-  });
-  ctx.font='bold 11px DM Sans';ctx.textAlign='right';ctx.textBaseline='bottom';ctx.fillStyle='rgba(255,255,255,.16)';
-  ctx.fillText('Roorkee, Uttarakhand · IIT Roorkee Area',W-10,H-8);
 }
 
-function placeUdot(){
-  var w=document.getElementById('mapWrap');
-  if(!udot){udot=document.createElement('div');udot.className='uloc';w.appendChild(udot);}
-  udot.style.left=(0.52*w.clientWidth)+'px';
-  udot.style.top =(0.48*w.clientHeight)+'px';
+function recenterToUser() {
+  toast('info', '📍', 'Locating user...', 'Re-centering map to browser GPS position');
+  initDynamicLocationTracker();
 }
 
-function resizeMap(){
-  var w=document.getElementById('mapWrap');
-  cv.width=w.clientWidth; cv.height=w.clientHeight;
-  drawMap(); placeUdot();
+function toggleHeat() {
+  const btn = document.getElementById('btnHeat');
+  btn.classList.toggle('heat');
+  const isHeat = btn.classList.contains('heat');
+  heatCircles.forEach(c => c.setStyle({ fillOpacity: isHeat ? 0.45 : 0.18 }));
+  toast('info', '🌡', 'Heatmap Layer', isHeat ? 'Heatmap overlay active' : 'Standard view active');
 }
 
-cv.addEventListener('mousemove',function(e){
-  var r=cv.getBoundingClientRect(),mx=(e.clientX-r.left)/r.width,my=(e.clientY-r.top)/r.height;
-  var W=cv.width,H=cv.height,asp=W/H,hit=null;
-  ZONES.forEach(function(z){var dx=mx-z.x,dy=my-z.y;if(Math.sqrt(dx*dx+dy*dy*asp*asp)<z.r)hit=z;});
-  var tt=document.getElementById('ztip');
-  if(hit){
-    tt.classList.add('on');
-    tt.style.left=(e.clientX-r.left+13)+'px';tt.style.top=(e.clientY-r.top-10)+'px';
-    var col={safe:'var(--green)',caution:'var(--amber)',danger:'var(--rose)'}[hit.t];
-    document.getElementById('ztT').style.color=col;
-    document.getElementById('ztT').textContent=hit.n;
-    document.getElementById('ztM').textContent=hit.i;
-  } else tt.classList.remove('on');
-});
-cv.addEventListener('mouseleave',function(){document.getElementById('ztip').classList.remove('on');});
+function toggleRoute() {
+  const btn = document.getElementById('btnRoute');
+  btn.classList.toggle('route');
+  const isRoute = btn.classList.contains('route');
+  if (safeRouteLine) {
+    safeRouteLine.setStyle({ opacity: isRoute ? 0.95 : 0.25, weight: isRoute ? 6 : 3 });
+  }
+  toast('success', '🧭', 'Safe Route', isRoute ? 'SafeWay Route Highlighted' : 'Route dimmed');
+}
 
-function toggleHeat(){ showHeat=!showHeat; document.getElementById('btnHeat').classList.toggle('heat',showHeat); drawMap(); }
-function toggleRoute(){ showSR=!showSR; document.getElementById('btnRoute').classList.toggle('route',showSR); drawMap(); }
-function activateRoute(){ showSR=true; document.getElementById('btnRoute').classList.add('route'); drawMap(); toast('success','🧭','Route A Active','Safe route via IIT Roorkee Main Road shown.'); }
-function doZoom(d){ toast('info','🔍','Map Zoom',d>0?'Zoomed in':'Zoomed out'); }
+function activateRoute() {
+  toggleRoute();
+  toast('success', '🟢', 'SafeWay Route Selected', 'Main illuminated commercial corridor route active');
+}
 
-window.addEventListener('resize',resizeMap);
-setTimeout(resizeMap,80);
+function doZoom(d) {
+  if (mapInstance) {
+    if (d > 0) mapInstance.zoomIn();
+    else mapInstance.zoomOut();
+  }
+}
 
-// Emergency Contacts
+// Contacts Management
 var contacts = [
   {n:'Emergency (You)', r:'Target Number',   p:'7061330201', c:'#e11d48', sent:false},
   {n:'Aarav Sharma',    r:'Brother',         p:'98765 43210',c:'#7c3aed', sent:false},
@@ -683,12 +819,12 @@ function saveContact(){
   toast('success','👤','Contact Added',n+' added as emergency contact.');
 }
 
-// Community Alerts
+// Community Safety Alerts
 var alertData=[
-  {t:'high',  ic:'⚠️',tt:'Suspicious activity near Old Canal Road, Roorkee', m:'Reported by 3 members · 1.2km from IIT Gate',tm:'8 min ago'},
-  {t:'medium',ic:'🔦',tt:'Street light outage near Roorkee Bus Stand',       m:'Municipality notified · 0.9km away',         tm:'42 min ago'},
-  {t:'medium',ic:'🚨',tt:'Verbal harassment at Industrial Area, Roorkee',    m:'UP Police alerted · 2.1km away',             tm:'1h 12m ago'},
-  {t:'low',   ic:'✅',tt:'New patrol added near Cantt Market, Roorkee',      m:'PAC deployed · Effective now',               tm:'2h ago'},
+  {t:'high',  ic:'⚠️',tt:'Suspicious activity reported nearby',        m:'Reported by community members · 0.8km away', tm:'5 min ago'},
+  {t:'medium',ic:'💡',tt:'Street light outage reported on main road',  m:'Municipality notified · 0.4km away',         tm:'25 min ago'},
+  {t:'medium',ic:'🚨',tt:'Verbal harassment reported near commercial market', m:'Local police alerted · 1.2km away',   tm:'45 min ago'},
+  {t:'low',   ic:'✅',tt:'New police patrol unit assigned',            m:'PAC Active Duty · Effective now',           tm:'1h ago'},
 ];
 function renderAlerts(){
   var el=document.getElementById('alertList');el.innerHTML='';
@@ -700,23 +836,7 @@ function renderAlerts(){
 }
 renderAlerts();
 
-var liveA=[
-  {t:'medium',ic:'👁', tt:'Suspicious vehicle near Old Canal Road',          m:'Community report · 0.7km from IIT Gate'},
-  {t:'high',  ic:'🚨',tt:'Distress signal from SafeHer user, Cantt Market', m:'1.3km · Roorkee Police notified'},
-  {t:'low',   ic:'💡',tt:'New CCTV installed near Railway Station Rd',      m:'Coverage improved · 0.6km'},
-  {t:'medium',ic:'⚠️',tt:'Poor lighting near Bus Stand, Roorkee',           m:'Municipality notified · 1.0km'},
-];
-var lI=0;
-setInterval(function(){
-  var a=liveA[lI%liveA.length];lI++;
-  alertData.unshift({t:a.t,ic:a.ic,tt:a.tt,m:a.m,tm:'Just now'});
-  renderAlerts();
-  document.getElementById('alertCount').textContent=parseInt(document.getElementById('alertCount').textContent)+1;
-  document.getElementById('alertBadge').textContent=parseInt(document.getElementById('alertBadge').textContent)+1;
-  if(a.t==='high')toast('danger',a.ic,'New High-Risk Alert',a.tt,5000);
-},45000);
-
-// Test Notification
+// Test Push Alert (ntfy)
 async function sendTest(){
   var btn=document.getElementById('testBtn');
   var msg=document.getElementById('ntfyMsg');
@@ -724,7 +844,7 @@ async function sendTest(){
 
   var ok = await ntfy(
     'SafeHer - Connection Test',
-    'SafeHer is LIVE! Emergency alerts fire here instantly when SOS is pressed. Location: IIT Roorkee, Roorkee, Uttarakhand. Time: '+new Date().toLocaleTimeString('en-IN'),
+    'SafeHer is LIVE! Emergency alerts fire here instantly when SOS is pressed. Current Location: '+currentCityName+'. Lat: '+gLat.toFixed(4)+'°N, Lng: '+gLng.toFixed(4)+'°E. Time: '+new Date().toLocaleTimeString('en-IN'),
     3,'white_check_mark,bell'
   );
 
@@ -742,14 +862,14 @@ async function sendTest(){
   }
 }
 
-// SOS Trigger Engine — Integrated with MST Blockchain Backend
+// SOS Trigger Engine — MST Blockchain Smart Contract Binding
 var sosTimer=null, sosStep=0;
 var latestBlockchainProof = null;
 
 var SOS_STEPS=[
-  {ic:'📍',lb:'Capturing Live GPS Location',     dt:function(){return 'Roorkee · Lat: '+gLat.toFixed(4)+'°N, Lng: '+gLng.toFixed(4)+'°E (±'+gAcc+'m)';}},
-  {ic:'📱',lb:'Transmitting Device Telemetry',  dt:function(){return 'Device: '+DID+' · Battery: '+gBatt+'%';}},
-  {ic:'🚨',lb:'Alerting Emergency Police',       dt:'Dialing 112 · Roorkee Police Control Room'},
+  {ic:'📍',lb:'Capturing Live GPS Location',     dt:function(){return currentCityName+' · Lat: '+gLat.toFixed(4)+'°N, Lng: '+gLng.toFixed(4)+'°E (±'+gAcc+'m)';}},
+  {ic:'📱',lb:'Transmitting Device Telemetry',  dt:function(){return 'Device: '+DID+' · Battery: 78%';}},
+  {ic:'🚨',lb:'Alerting Emergency Services',     dt:'Dialing 112 · Local Control Room'},
   {ic:'🔔',lb:'Firing Push Alert to +91 7061330201', dt:'ntfy alert → phone +917061330201', hl:true},
   {ic:'⛓️',lb:'Committing Proof on MST Blockchain', dt:'Writing SHA-256 fingerprint to MST Testnet (Chain ID 91562037)'},
   {ic:'👥',lb:'Notifying All Contacts & Logging',  dt:'Push + Google Maps link → all emergency contacts'},
@@ -775,7 +895,7 @@ function runSOS(){
   if(sosStep>=SOS_STEPS.length){
     contacts.forEach(function(c){c.sent=true;}); renderContacts();
     toast('success','✅','All Alerts & On-Chain Proof Sent','Police, ntfy alert, and MST Blockchain proof recorded.',5000);
-    setTimeout(function(){toast('success','🚓','Police Dispatched','Roorkee patrol en route to IIT Roorkee area.',5000);},1500);
+    setTimeout(function(){toast('success','🚓','Police Dispatched','Local patrol en route to your position.',5000);},1500);
     setTimeout(showPushPreview,2800);
     return;
   }
@@ -786,6 +906,7 @@ function runSOS(){
 async function triggerSOS(){
   sosStep=0;
   latestBlockchainProof = null;
+  document.getElementById('sosModalSub').textContent = `Real push fired · MST Blockchain proof recording · ${currentCityName}`;
   openModal('sosModal');
   document.getElementById('sosBtn').classList.add('fired');
   runSOS();
@@ -818,7 +939,7 @@ async function triggerSOS(){
   var mapsLink='https://maps.google.com/?q='+curLat+','+curLng;
   await ntfy(
     'SAFEHER EMERGENCY - DANGER ALERT',
-    'Your close one may be in DANGER! Location: IIT Roorkee Area, Roorkee, Uttarakhand. Lat: '+curLat+'N Lng: '+curLng+'E. Maps: '+mapsLink+'. Device: '+DID+'. Time: '+tim+'. CALL 112 IMMEDIATELY.',
+    'Your close one may be in DANGER! Location: '+currentCityName+'. Lat: '+curLat+'N Lng: '+curLng+'E. Maps: '+mapsLink+'. Device: '+DID+'. Time: '+tim+'. CALL 112 IMMEDIATELY.',
     5,'rotating_light,sos,warning'
   );
 }
@@ -828,7 +949,7 @@ function showPushPreview(){
     '<br/>MST Tx Hash: <a href="'+latestBlockchainProof.explorerUrl+'" target="_blank" style="color:var(--green);word-break:break-all;">'+latestBlockchainProof.transactionHash+'</a>' : '';
 
   document.getElementById('pushBody').innerHTML=
-    'Location: <strong>IIT Roorkee Area, Roorkee</strong><br/>'
+    'Location: <strong>'+currentCityName+'</strong><br/>'
     +'Lat: <strong style="color:var(--rose);">'+gLat.toFixed(4)+'°N</strong> · Lng: <strong style="color:var(--rose);">'+gLng.toFixed(4)+'°E</strong><br/>'
     +'Device: <span style="color:var(--muted);font-size:10.5px;">'+DID+'</span><br/>'
     +'Maps: <a href="https://maps.google.com/?q='+gLat.toFixed(4)+','+gLng.toFixed(4)+'" target="_blank" style="color:var(--blue);">maps.google.com/?q='+gLat.toFixed(4)+','+gLng.toFixed(4)+'</a>'
@@ -847,9 +968,20 @@ function cancelSOS(){
 }
 
 function call112(){
-  toast('danger','📞','Calling 112 — Roorkee Police','Connecting to Control Room… Stay on line!',6000);
-  setTimeout(function(){toast('success','🚓','Connected','Roorkee Police responding. Patrol dispatched.',5000);},2500);
+  toast('danger','📞','Calling 112 — Emergency Police','Connecting to Control Room… Stay on line!',6000);
+  setTimeout(function(){toast('success','🚓','Connected','Emergency police responding. Patrol dispatched.',5000);},2500);
 }
+
+// Clock
+setInterval(function(){
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-IN',{hour12:false});
+}, 1000);
+document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-IN',{hour12:false});
+
+// Initialize on page load
+window.addEventListener('load', function() {
+  initDynamicLocationTracker();
+});
 </script>
 </body>
 </html>
