@@ -28,24 +28,21 @@ export async function createSOSRecord(data) {
         status: "ACTIVE"
     };
 
-    // 1. Dispatch immediate emergency notification via ntfy.sh to phone contact topic 7061330201
+    // 1. Dispatch ONE immediate emergency notification via ntfy.sh to contact number 7061330201
     try {
         const phone = process.env.EMERGENCY_CONTACT_PHONE || "+917061330201";
         const topic = process.env.NTFY_TOPIC || "7061330201";
         const mapUrl = `https://maps.google.com/?q=${sosRecord.location.latitude},${sosRecord.location.longitude}`;
-        const messageBody = `🚨 EMERGENCY SOS ALERT #${sosSequence}\nContact Number: ${phone}\nLocation: Lat ${sosRecord.location.latitude}, Long ${sosRecord.location.longitude}\nGoogle Maps: ${mapUrl}\nEvent ID: ${eventId}\nTime: ${new Date().toLocaleTimeString()}`;
+        const messageBody = `🚨 EMERGENCY SOS ALERT!\nContact Number: ${phone}\nLocation: Lat ${sosRecord.location.latitude}, Long ${sosRecord.location.longitude}\nGoogle Maps: ${mapUrl}\nEvent ID: ${eventId}\nTime: ${new Date().toLocaleTimeString()}`;
 
         const headers = {
-            "Title": `SafeHer SOS Alert #${sosSequence} for ${phone}`,
+            "Title": `SafeHer SOS Alert for ${phone}`,
             "Priority": "5",
             "Tags": "warning,emergency,phone,rotating_light",
             "Click": mapUrl
         };
 
-        // Post to primary topic (7061330201)
-        fetch(`https://ntfy.sh/${topic}`, { method: "POST", body: messageBody, headers }).catch(err => console.log("Ntfy topic 1 send:", err.message));
-        // Post to fallback topic (safeher_7061330201)
-        fetch(`https://ntfy.sh/safeher_${topic}`, { method: "POST", body: messageBody, headers }).catch(err => console.log("Ntfy topic 2 send:", err.message));
+        fetch(`https://ntfy.sh/${topic}`, { method: "POST", body: messageBody, headers }).catch(err => console.log("Ntfy send log:", err.message));
     } catch (e) {
         console.warn("Ntfy alert error:", e.message);
     }
