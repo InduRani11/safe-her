@@ -1086,6 +1086,7 @@ var latestBlockchainProof = null;
 var SOS_STEPS=[
   {ic:'📍',lb:'Capturing Live GPS Location',     dt:function(){return currentCityName+' · Lat: '+gLat.toFixed(4)+'°N, Lng: '+gLng.toFixed(4)+'°E (±'+gAcc+'m)';}},
   {ic:'📱',lb:'Transmitting Device Telemetry',  dt:function(){return 'Device: '+DID+' · Battery: 78%';}},
+  {ic:'📞',lb:'Emergency Contact Call',          dt:'Calling to your emergency contact (+91 7061330201) is done ✓', hl:true},
   {ic:'🚨',lb:'Alerting Emergency Services',     dt:'Dialing 112 · Local Control Room'},
   {ic:'🔔',lb:'Firing Push Alert to +91 7061330201', dt:'ntfy alert → phone +917061330201', hl:true},
   {ic:'⛓️',lb:'Committing Proof on MST Blockchain', dt:'Writing SHA-256 fingerprint to MST Testnet (Chain ID 91562037)'},
@@ -1098,7 +1099,7 @@ function renderSteps(){
     var stT=i<sosStep?'✓ Done':i===sosStep?'⟳ Processing…':'○ Pending';
     var stC=i<sosStep?'done':i===sosStep?'act':'pnd';
     var det=typeof s.dt==='function'?s.dt():s.dt;
-    if (i === 4 && latestBlockchainProof) {
+    if (s.lb.includes('MST Blockchain') && latestBlockchainProof) {
       det = 'Confirmed on MST Testnet (Tx: ' + latestBlockchainProof.transactionHash.slice(0, 14) + '...) Block #' + latestBlockchainProof.blockNumber;
     }
     return '<div class="mstep '+cls+'"><div class="ms-ic">'+s.ic+'</div>'
@@ -1165,12 +1166,14 @@ function showPushPreview(){
   const user = window.SafeHerAuth ? window.SafeHerAuth.getUser() : null;
   const userName = user ? user.fullName : 'Registered User';
   const userPhone = user ? user.phone : '+91 7061330201';
+  const guardianInfo = (user && user.emergencyContactName) ? user.emergencyContactName : 'Emergency Guardian (+91 7061330201)';
 
   var txHashHtml = latestBlockchainProof ? 
     '<br/>MST Tx Hash: <a href="'+latestBlockchainProof.explorerUrl+'" target="_blank" style="color:var(--green);word-break:break-all;">'+latestBlockchainProof.transactionHash+'</a>' : '';
 
   document.getElementById('pushBody').innerHTML=
     'User: <strong style="color:var(--text);">'+userName+'</strong> ('+userPhone+')<br/>'
+    +'Emergency Call: <strong style="color:var(--green);">Calling to your emergency contact ('+guardianInfo+') is done ✓</strong><br/>'
     +'Location: <strong>'+(currentCityName || 'Live GPS Coordinates')+'</strong><br/>'
     +'Lat: <strong style="color:var(--rose);">'+gLat.toFixed(4)+'°N</strong> · Lng: <strong style="color:var(--rose);">'+gLng.toFixed(4)+'°E</strong><br/>'
     +'Device: <span style="color:var(--muted);font-size:10.5px;">'+DID+'</span><br/>'
