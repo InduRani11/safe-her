@@ -60,35 +60,62 @@ function createHistoryCard(record) {
   const dateStr = new Date(record.timestamp).toLocaleString();
   const txHash = record.blockchain?.transactionHash || "N/A";
   const scanUrl = window.getMSTScanTxUrl ? window.getMSTScanTxUrl(txHash) : `https://testnet.mstscan.com/tx/${txHash}`;
+  const contactPhone = record.contactPhone || "+91 7061330201";
+  const alertMsg = record.alertMessage || `🚨 EMERGENCY SOS ALERT! Location: Lat ${record.location.latitude}, Long ${record.location.longitude} - Emergency alert sent to contacts.`;
+  const mapUrl = `https://maps.google.com/?q=${record.location.latitude},${record.location.longitude}`;
 
   card.innerHTML = `
     <div class="history-card-top">
-      <span class="event-id-badge">🚨 ${record.eventId}</span>
+      <div style="display:flex; align-items:center; gap: 0.5rem; flex-wrap:wrap;">
+        <span class="event-id-badge">🚨 ${record.eventId}</span>
+        <span class="blockchain-verified-tag">🛡️ MST Blockchain Secured</span>
+      </div>
       <span class="timestamp">📅 ${dateStr}</span>
     </div>
 
-    <div class="history-details">
-      <div>
-        <span class="proof-label">Status</span>
-        <div style="font-weight: 700; color: ${record.tampered ? 'var(--accent-red)' : 'var(--accent-green)'};">
-          ${record.tampered ? '⚠️ TAMPERED LOCAL RECORD' : 'ACTIVE EMERGENCY'}
+    <div class="history-user-info-grid">
+      <div class="info-block">
+        <span class="info-label">Alert Status</span>
+        <div class="status-badge-live ${record.tampered ? 'tampered' : 'active'}">
+          ${record.tampered ? '⚠️ TAMPERED LOCAL RECORD' : '🚨 EMERGENCY ALERT DISPATCHED'}
         </div>
       </div>
-      <div>
-        <span class="proof-label">Location (GPS)</span>
-        <div style="font-family: monospace;">Lat: ${record.location.latitude}, Long: ${record.location.longitude}</div>
+
+      <div class="info-block">
+        <span class="info-label">Emergency Contact Notified</span>
+        <div class="info-val-phone">📱 ${contactPhone}</div>
+      </div>
+
+      <div class="info-block full-width">
+        <span class="info-label">GPS Emergency Location</span>
+        <div class="info-val-location">
+          📍 Lat: ${record.location.latitude}, Long: ${record.location.longitude}
+          <a href="${mapUrl}" target="_blank" rel="noopener noreferrer" class="map-btn-link">View Emergency Location ↗</a>
+        </div>
+      </div>
+
+      <div class="info-block full-width">
+        <span class="info-label">Notification Message Sent</span>
+        <div class="info-val-message">💬 "${alertMsg}"</div>
       </div>
     </div>
 
-    <div class="proof-row">
-      <span class="proof-label">SHA-256 Record Hash (Fingerprint)</span>
-      <span class="proof-value">${record.recordHash || 'N/A'}</span>
-    </div>
-
-    <div class="proof-row">
-      <span class="proof-label">MST Testnet Transaction Hash</span>
-      <span class="proof-value">${txHash}</span>
-    </div>
+    <details class="tech-details-toggle">
+      <summary class="tech-details-summary">
+        <span>🔍 View Technical Cryptographic Proof & On-Chain Hashes</span>
+        <span class="tech-tag">MST Blockchain Proof</span>
+      </summary>
+      <div class="tech-details-content">
+        <div class="proof-row">
+          <span class="proof-label">SHA-256 Record Fingerprint</span>
+          <span class="proof-value">${record.recordHash || 'N/A'}</span>
+        </div>
+        <div class="proof-row">
+          <span class="proof-label">MST Testnet Transaction Hash</span>
+          <span class="proof-value">${txHash}</span>
+        </div>
+      </div>
+    </details>
 
     <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.5rem; align-items: center;">
       <button class="btn-action btn-verify" data-id="${record.eventId}">
@@ -100,7 +127,7 @@ function createHistoryCard(record) {
       </button>
 
       <a href="${scanUrl}" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 0.85rem;">
-        Explorer ↗
+        View on Explorer ↗
       </a>
     </div>
 

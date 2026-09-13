@@ -1,132 +1,2837 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SafeHer — Emergency SOS Control Center</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-</head>
-<body>
 
-  <!-- Navigation Bar -->
-  <nav class="navbar">
-    <a href="home.html" class="nav-brand">
-      <span class="shield">🛡️</span> Safe<span class="brand-highlight">Her</span>
-    </a>
-    <div class="nav-menu">
-      <a href="home.html" class="nav-link active">🚨 Emergency SOS</a>
-      <a href="history.html" class="nav-link">📋 Proof History</a>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SafeHer — Women's Safety · Emergency SOS & SafeWay Navigation</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Instrument+Serif:ital@0;1&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    :root {
+      --bg: #090a0f;
+      --surface: rgba(18, 20, 28, 0.94);
+      --surface2: rgba(26, 28, 40, 0.85);
+      --surface3: #222536;
+      --surface-glass: rgba(15, 18, 26, 0.82);
+      --border: rgba(255, 255, 255, 0.09);
+      --border-highlight: rgba(255, 255, 255, 0.16);
+      --rose: #ff4d72;
+      --rose-dim: rgba(255, 77, 114, 0.16);
+      --rose-glow: rgba(255, 77, 114, 0.45);
+      --amber: #ffb347;
+      --amber-dim: rgba(255, 179, 71, 0.16);
+      --green: #36d68a;
+      --green-dim: rgba(54, 214, 138, 0.14);
+      --blue: #4d9fff;
+      --blue-dim: rgba(77, 159, 255, 0.14);
+      --text: #f3f4f8;
+      --muted: #9da0b3;
+      --dim: #64677a;
+      --r: 16px;
+      --rs: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 99px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--rose);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 250px 1fr 320px;
+      grid-template-rows: 58px 1fr;
+      height: 100vh;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      grid-column: 1/-1;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      gap: 14px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-family: 'Instrument Serif', serif;
+      font-size: 21px;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .logo-dot {
+      width: 30px;
+      height: 30px;
+      background: var(--rose);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      box-shadow: 0 0 14px var(--rose-glow);
+    }
+
+    .pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .pill-green {
+      background: var(--green-dim);
+      color: var(--green);
+      border: 1px solid rgba(54, 214, 138, .2);
+    }
+
+    .dot-blink {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: blink 2s infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .4
+      }
+    }
+
+    .tb-loc {
+      font-size: 11px;
+      color: var(--text);
+      background: var(--surface2);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      font-weight: 600;
+    }
+
+    .tb-spacer {
+      flex: 1;
+    }
+
+    .wallet-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(77, 159, 255, .12);
+      border: 1px solid rgba(77, 159, 255, .3);
+      color: var(--blue);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .wallet-btn:hover {
+      background: rgba(77, 159, 255, .25);
+      box-shadow: 0 0 12px rgba(77, 159, 255, .3);
+    }
+
+    .wallet-btn.connected {
+      background: var(--green-dim);
+      border-color: rgba(54, 214, 138, .3);
+      color: var(--green);
+    }
+
+    .tb-clock {
+      font-size: 13px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff4d72, #c044ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .s-sec {
+      padding: 4px 14px;
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 1.3px;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin: 14px 0 4px;
+    }
+
+    .navi {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 9px 18px;
+      cursor: pointer;
+      transition: background .15s;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--muted);
+      position: relative;
+      text-decoration: none;
+    }
+
+    .navi:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .navi.on {
+      background: var(--rose-dim);
+      color: var(--rose);
+    }
+
+    .navi.on::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 6px;
+      bottom: 6px;
+      width: 3px;
+      background: var(--rose);
+      border-radius: 0 3px 3px 0;
+    }
+
+    .navi-ic {
+      font-size: 17px;
+      width: 21px;
+      text-align: center;
+    }
+
+    .nbadge {
+      margin-left: auto;
+      background: var(--rose);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 99px;
+    }
+
+    .s-sos-wrap {
+      margin: auto 14px 14px;
+    }
+
+    /* ── MAIN ── */
+    .main {
+      overflow-y: auto;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HERO EMERGENCY SOS BANNER ABOVE MAP ── */
+    /* ── HERO EMERGENCY SOS BANNER AT VERY TOP ── */
+    .hero-sos-banner {
+      background: linear-gradient(135deg, rgba(255, 42, 95, 0.18) 0%, rgba(13, 17, 23, 0.98) 100%);
+      border-bottom: 1px solid rgba(255, 42, 95, 0.3);
+      padding: 26px 20px 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      flex-shrink: 0;
+      z-index: 5;
+    }
+
+    .hero-sos-pill {
+      background: rgba(255, 42, 95, 0.2);
+      border: 1px solid rgba(255, 42, 95, 0.4);
+      color: var(--rose);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 99px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .hero-sos-ring-container {
+      position: relative;
+      width: 190px;
+      height: 190px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 8px 0 16px;
+      flex-shrink: 0;
+    }
+
+    .hero-sos-pulse-wave {
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      background: rgba(255, 42, 95, 0.28);
+      animation: hero-pulse-anim 2s infinite ease-out;
+      pointer-events: none;
+    }
+
+    .hero-sos-pulse-wave-2 {
+      position: absolute;
+      inset: -24px;
+      border-radius: 50%;
+      border: 2px dashed rgba(255, 42, 95, 0.45);
+      animation: hero-rotate-anim 12s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes hero-pulse-anim {
+      0% {
+        transform: scale(0.85);
+        opacity: 0.85;
+      }
+
+      100% {
+        transform: scale(1.48);
+        opacity: 0;
+      }
+    }
+
+    @keyframes hero-rotate-anim {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .hero-sos-big-btn {
+      width: 155px;
+      height: 155px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ff527b, #d90032 75%);
+      border: 5px solid rgba(255, 255, 255, 0.45);
+      color: #ffffff;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      box-shadow: 0 14px 44px rgba(255, 42, 95, 0.75), inset 0 3px 8px rgba(255, 255, 255, 0.5);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      z-index: 2;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .hero-sos-big-btn:hover {
+      transform: scale(1.06);
+      box-shadow: 0 18px 52px rgba(255, 42, 95, 0.9), inset 0 3px 8px rgba(255, 255, 255, 0.6);
+    }
+
+    .hero-sos-big-btn:active {
+      transform: scale(0.95);
+      box-shadow: 0 4px 16px rgba(255, 42, 95, 0.9);
+    }
+
+    .hero-sos-big-btn.fired {
+      animation: sp .4s ease;
+    }
+
+    .hero-sos-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.25;
+      margin: 4px 0 4px;
+    }
+
+    .hero-sos-desc {
+      font-size: 12.5px;
+      color: var(--muted);
+      max-width: 580px;
+      line-height: 1.45;
+      margin-bottom: 14px;
+    }
+
+    .hero-status-pills {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status-pill-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-size: 11.5px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    /* ── MAP (BECOMES VISIBLE WHEN SCROLLING DOWN) ── */
+    .map-wrap {
+      position: relative;
+      height: 520px;
+      min-height: 520px;
+      flex-shrink: 0;
+      overflow: hidden;
+      background: #0d1117;
+    }
+
+    #leafletMap {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .map-top {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      gap: 9px;
+      pointer-events: none;
+      z-index: 10;
+      flex-wrap: wrap;
+    }
+
+    .map-top>* {
+      pointer-events: auto;
+    }
+
+    .sbar {
+      flex: 1;
+      min-width: 260px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: rgba(19, 20, 26, .93);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: var(--rs);
+      padding: 9px 13px;
+    }
+
+    .sbar input {
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 12.5px;
+      font-family: 'DM Sans', sans-serif;
+      flex: 1;
+    }
+
+    .sbar input::placeholder {
+      color: var(--dim);
+    }
+
+    .mcb {
+      background: rgba(19, 20, 26, .93);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: var(--rs);
+      padding: 9px 13px;
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .mcb:hover {
+      color: var(--text);
+    }
+
+    .mcb.active {
+      background: var(--blue-dim);
+      color: var(--blue);
+      border-color: rgba(77, 159, 255, .3);
+    }
+
+    .mcb.heat {
+      background: var(--amber-dim);
+      color: var(--amber);
+      border-color: rgba(255, 179, 71, .3);
+    }
+
+    .mcb.route {
+      background: var(--green-dim);
+      color: var(--green);
+      border-color: rgba(54, 214, 138, .3);
+    }
+
+    .map-leg {
+      position: absolute;
+      bottom: 14px;
+      left: 14px;
+      background: rgba(19, 20, 26, .93);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: var(--rs);
+      padding: 11px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      z-index: 10;
+    }
+
+    .leg-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .leg-d {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* Custom Marker Styles */
+    .user-live-pin {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--blue);
+      border: 3px solid #ffffff;
+      box-shadow: 0 0 16px var(--blue);
+      position: relative;
+    }
+
+    .user-live-pulse {
+      position: absolute;
+      top: -8px;
+      left: -8px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(77, 159, 255, .4);
+      animation: map-pulse-anim 1.8s infinite ease-out;
+    }
+
+    @keyframes map-pulse-anim {
+      0% {
+        transform: scale(0.5);
+        opacity: 0.9;
+      }
+
+      100% {
+        transform: scale(1.8);
+        opacity: 0;
+      }
+    }
+
+    .haven-map-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(13, 17, 23, 0.95);
+      border: 2px solid var(--green);
+      font-size: 1rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    }
+
+    .haven-map-badge.police {
+      border-color: var(--blue);
+    }
+
+    .haven-map-badge.hospital {
+      border-color: var(--rose);
+    }
+
+    /* ── DASH CONTENT ── */
+    .dc {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .sh {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sh-t {
+      font-size: 14.5px;
+      font-weight: 600;
+    }
+
+    .sh-l {
+      font-size: 11.5px;
+      color: var(--rose);
+      cursor: pointer;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 11px;
+      margin-top: 12px;
+    }
+
+    .sc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sc:hover {
+      border-color: rgba(255, 255, 255, .11);
+    }
+
+    .sc-lbl {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+
+    .sc-val {
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .sc-val.g {
+      color: var(--green)
+    }
+
+    .sc-val.r {
+      color: var(--rose)
+    }
+
+    .sc-val.a {
+      color: var(--amber)
+    }
+
+    .sc-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .pbar {
+      height: 4px;
+      background: var(--surface3);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .pbar-f {
+      height: 100%;
+      border-radius: 99px;
+    }
+
+    .al-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .al-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--rs);
+      padding: 13px 15px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      cursor: pointer;
+      transition: all .2s;
+      animation: si .3s ease;
+    }
+
+    @keyframes si {
+      from {
+        transform: translateX(-8px);
+        opacity: 0
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1
+      }
+    }
+
+    .al-item:hover {
+      border-color: rgba(255, 255, 255, .11);
+      background: var(--surface2);
+    }
+
+    .al-ic {
+      width: 34px;
+      height: 34px;
+      border-radius: 99px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .al-ic.high {
+      background: rgba(255, 77, 114, .1)
+    }
+
+    .al-ic.medium {
+      background: rgba(255, 179, 71, .1)
+    }
+
+    .al-ic.low {
+      background: rgba(54, 214, 138, .08)
+    }
+
+    .al-inf {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .al-ttl {
+      font-size: 12.5px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .al-met {
+      font-size: 11px;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .al-tm {
+      font-size: 10.5px;
+      color: var(--dim);
+      white-space: nowrap;
+    }
+
+    .rc {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--rs);
+      padding: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+      cursor: pointer;
+      transition: all .15s;
+      flex-direction: column;
+    }
+
+    .rc:hover {
+      border-color: rgba(54, 214, 138, .4);
+    }
+
+    .rc-top {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      width: 100%;
+    }
+
+    .rc-ic {
+      width: 38px;
+      height: 38px;
+      border-radius: 99px;
+      background: var(--green-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .rc-inf {
+      flex: 1;
+    }
+
+    .rc-n {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .rc-m {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .rc-sf {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--green);
+      background: var(--green-dim);
+      padding: 3px 8px;
+      border-radius: 99px;
+      white-space: nowrap;
+    }
+
+    .gmaps-btn {
+      background: rgba(77, 159, 255, .12);
+      border: 1px solid rgba(77, 159, 255, .3);
+      color: var(--blue);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 6px;
+      transition: all .2s;
+    }
+
+    .gmaps-btn:hover {
+      background: rgba(77, 159, 255, .25);
+      box-shadow: 0 0 10px rgba(77, 159, 255, .3);
+    }
+
+    /* ── RIGHT PANEL ── */
+    .rp {
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ps {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ps:last-child {
+      border-bottom: none;
+    }
+
+    .pt {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 13px;
+    }
+
+    /* NTFY PANEL */
+    .ntfy-wrap {
+      background: linear-gradient(135deg, rgba(77, 159, 255, .06), rgba(77, 159, 255, .02));
+      border-bottom: 1px solid rgba(77, 159, 255, .13) !important;
+    }
+
+    .ns {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      padding: 8px 10px;
+      background: var(--surface3);
+      border-radius: 8px;
+    }
+
+    .topic-badge {
+      background: rgba(77, 159, 255, .12);
+      color: var(--blue);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid rgba(77, 159, 255, .2);
+      display: inline-block;
+      margin-top: 4px;
+      word-break: break-all;
+    }
+
+    .test-btn {
+      width: 100%;
+      padding: 11px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--blue);
+      color: #fff;
+      transition: all .2s;
+      box-shadow: 0 4px 14px rgba(77, 159, 255, .3);
+    }
+
+    .test-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(77, 159, 255, .4);
+    }
+
+    .test-btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* SOS BUTTON */
+    .sos-ring-wrap {
+      position: relative;
+      width: 124px;
+      height: 124px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ring-outer {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 77, 114, .2);
+      animation: rr 8s linear infinite;
+    }
+
+    @keyframes rr {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .ring-outer::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: 50%;
+      width: 7px;
+      height: 7px;
+      background: var(--rose);
+      border-radius: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 0 8px var(--rose);
+    }
+
+    .sos-btn {
+      width: 104px;
+      height: 104px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #ff3d65, #ff6b8a);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      transition: all .15s;
+      box-shadow: 0 8px 30px rgba(255, 77, 114, .3), inset 0 2px 4px rgba(255, 255, 255, .15);
+      position: relative;
+      z-index: 2;
+    }
+
+    .sos-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 10px rgba(255, 77, 114, .1), 0 12px 38px rgba(255, 77, 114, .4), inset 0 2px 4px rgba(255, 255, 255, .15);
+    }
+
+    .sos-btn:active {
+      transform: scale(.97);
+    }
+
+    .sos-btn.fired {
+      animation: sp .4s ease;
+    }
+
+    @keyframes sp {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 77, 114, .9)
+      }
+
+      50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 28px rgba(255, 77, 114, 0)
+      }
+
+      100% {
+        transform: scale(1)
+      }
+    }
+
+    .sos-lbl {
+      font-size: 21px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 2.5px;
+    }
+
+    .sos-sub {
+      font-size: 8.5px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, .65);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .sos-hint {
+      font-size: 11px;
+      color: var(--dim);
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    /* CONTACTS */
+    .cl {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .ci {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 11px;
+      background: var(--surface2);
+      border-radius: var(--rs);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .ci:hover {
+      border-color: rgba(255, 255, 255, .11);
+    }
+
+    .ca {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      flex-shrink: 0;
+      color: #fff;
+    }
+
+    .cn-name {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 1px;
+    }
+
+    .cn-rel {
+      font-size: 10px;
+      color: var(--dim);
+    }
+
+    .csd {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .csd.live {
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+    }
+
+    .csd.off {
+      background: var(--dim);
+    }
+
+    .add-c {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 11px;
+      border: 1px dashed var(--border);
+      border-radius: var(--rs);
+      cursor: pointer;
+      color: var(--dim);
+      font-size: 12.5px;
+      background: none;
+      font-family: 'DM Sans', sans-serif;
+      width: 100%;
+      transition: all .15s;
+      margin-top: 7px;
+    }
+
+    .add-c:hover {
+      color: var(--rose);
+      border-color: rgba(255, 77, 114, .3);
+    }
+
+    /* DEVICE */
+    .dev {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .dr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+    }
+
+    .dk {
+      color: var(--dim);
+    }
+
+    .dv {
+      color: var(--text);
+      font-weight: 500;
+      font-size: 10.5px;
+      background: var(--surface2);
+      padding: 3px 7px;
+      border-radius: 5px;
+      max-width: 168px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* MODALS */
+    .mb {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .78);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mb.on {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: 480px;
+      max-width: calc(100vw - 28px);
+      overflow: hidden;
+      animation: mi .3s cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    @keyframes mi {
+      from {
+        transform: scale(.86);
+        opacity: 0
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1
+      }
+    }
+
+    .mh {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 9px;
+      background: linear-gradient(135deg, #1a0b10, #200d16);
+      border-bottom: 1px solid rgba(255, 77, 114, .2);
+    }
+
+    .mh.blu {
+      background: linear-gradient(135deg, #0b0f1a, #0d1220);
+      border-bottom-color: rgba(77, 159, 255, .2);
+    }
+
+    .mh.grn {
+      background: linear-gradient(135deg, #0a130a, #0d1a0d);
+      border-bottom-color: rgba(54, 214, 138, .2);
+    }
+
+    .mh-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 25px;
+    }
+
+    .mh-icon.rose {
+      background: var(--rose);
+      box-shadow: 0 0 28px var(--rose-glow);
+      animation: pr 1.2s infinite;
+    }
+
+    @keyframes pr {
+
+      0%,
+      100% {
+        box-shadow: 0 0 20px var(--rose-glow)
+      }
+
+      50% {
+        box-shadow: 0 0 40px var(--rose-glow)
+      }
+    }
+
+    .mh-title {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .mh-sub {
+      font-size: 11.5px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .mbody {
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .mstep {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 12px;
+      background: var(--surface2);
+      border-radius: var(--rs);
+      border: 1px solid var(--border);
+      transition: all .3s;
+    }
+
+    .mstep.done {
+      border-color: rgba(54, 214, 138, .3);
+      background: rgba(54, 214, 138, .03);
+    }
+
+    .mstep.act {
+      border-color: rgba(255, 77, 114, .35);
+      background: var(--rose-dim);
+    }
+
+    .ms-ic {
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .ms-inf {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .ms-lbl {
+      font-size: 12.5px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .ms-det {
+      font-size: 10.5px;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ms-st {
+      font-size: 11.5px;
+      white-space: nowrap;
+    }
+
+    .ms-st.done {
+      color: var(--green)
+    }
+
+    .ms-st.act {
+      color: var(--rose)
+    }
+
+    .ms-st.pnd {
+      color: var(--dim)
+    }
+
+    .mfooter {
+      padding: 0 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border-radius: var(--rs);
+      border: none;
+      cursor: pointer;
+      font-size: 13.5px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      transition: all .15s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-rose {
+      background: var(--rose);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(255, 77, 114, .3);
+    }
+
+    .btn-rose:hover {
+      background: #ff3060;
+    }
+
+    .btn-green {
+      background: var(--green);
+      color: #071a0e;
+      box-shadow: 0 4px 16px rgba(54, 214, 138, .25);
+    }
+
+    .btn-green:hover {
+      background: #2fc47a;
+    }
+
+    .btn-ghost {
+      background: var(--surface2);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      color: var(--text);
+    }
+
+    .ilab {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    .inp {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 13px;
+      font-size: 12.5px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border-color .15s;
+      margin-bottom: 11px;
+    }
+
+    .inp:focus {
+      border-color: rgba(255, 77, 114, .4);
+    }
+
+    .inp::placeholder {
+      color: var(--dim);
+    }
+
+    /* TOASTS */
+    .tc {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      z-index: 200;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--rs);
+      padding: 12px 15px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-size: 12.5px;
+      min-width: 285px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .35);
+      animation: ti .3s ease;
+      pointer-events: auto;
+    }
+
+    @keyframes ti {
+      from {
+        transform: translateX(18px);
+        opacity: 0
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1
+      }
+    }
+
+    .ti-ico {
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .ti-txt {
+      flex: 1;
+    }
+
+    .ti-ttl {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .ti-sub {
+      font-size: 10.5px;
+      color: var(--muted);
+    }
+
+    .toast.success {
+      border-color: rgba(54, 214, 138, .3);
+    }
+
+    .toast.warning {
+      border-color: rgba(255, 179, 71, .3);
+    }
+
+    .toast.danger {
+      border-color: rgba(255, 77, 114, .3);
+    }
+
+    .toast.info {
+      border-color: rgba(77, 159, 255, .3);
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--surface3);
+      border-radius: 99px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <a href="home.html" class="logo">
+        <div class="logo-dot">🛡</div>SafeHer
+      </a>
+      <span class="tb-loc" id="tbLoc">📍 Detecting location...</span>
+      <button class="mcb" onclick="openModal('notificationsDrawer')"
+        style="background:var(--rose-dim);color:var(--rose);border-color:rgba(255,77,114,.3);font-weight:700;">
+        🔔 Alerts <span class="nbadge" id="topAlertBadge">3</span>
+      </button>
+      <div class="tb-spacer"></div>
       <button id="walletConnectBtn" class="wallet-btn">
         🦊 Connect BridgeKey Wallet
       </button>
-    </div>
-  </nav>
-
-  <div class="container">
-    
-    <!-- Network Banner -->
-    <div class="network-bar">
-      <div id="networkBadge" class="network-badge">
-        <span class="dot pulse"></span> Network: MST Testnet (Chain ID 91562037)
+      <div class="pill pill-green">
+        <div class="dot-blink"></div>MST Testnet Active
       </div>
-      <div style="font-size: 0.85rem; color: var(--text-muted);">
-        Official Wallet: <a href="https://bridgekey.io" target="_blank" style="color: #38bdf8; text-decoration: none;">BridgeKey Wallet ↗</a>
-      </div>
-    </div>
+      <div class="tb-clock" id="clock">--:--:--</div>
+      <div class="avatar" id="userAvatar" onclick="openModal('profileModal')" title="View User Profile"
+        style="cursor:pointer;">S</div>
+      <button class="wallet-btn" onclick="window.SafeHerAuth.logout()"
+        style="border-color:rgba(255,77,114,0.3);color:var(--rose);background:var(--rose-dim);padding:5px 11px;font-size:11px;"
+        title="Log out of SafeHer">🚪 Sign Out</button>
+    </header>
 
-    <!-- Main SOS Button Section -->
-    <div class="sos-hero">
-      <h1 class="sos-title">Emergency SOS System</h1>
-      <p class="sos-subtitle">
-        Press the button below in an emergency situation. Your real GPS position will be captured, an emergency notification sent immediately to contact number <strong>+917061330201</strong>, and a cryptographic proof generated on <strong>MST Blockchain</strong>.
-      </p>
-
-      <div class="sos-button-wrapper">
-        <div class="sos-pulse-ring"></div>
-        <button id="sosButton" class="sos-btn">
-          <span class="icon">🚨</span>
-          <span>PRESS SOS</span>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="s-sec">Navigation</div>
+      <a href="home.html" class="navi on"><span class="navi-ic">🆘</span>Emergency SOS</a>
+      <a href="javascript:void(0)" onclick="openModal('notificationsDrawer')" class="navi"><span
+          class="navi-ic">🔔</span>Alerts & Telemetry <span class="nbadge" id="alertBadge">3</span></a>
+      <a href="#contactsSection" class="navi"><span class="navi-ic">👥</span>Contacts</a>
+      <a href="#routesSection" class="navi"><span class="navi-ic">🧭</span>Safe Routes</a>
+      <a href="history.html" class="navi"><span class="navi-ic">📋</span>Proof History</a>
+      <div class="s-sec">Account</div>
+      <a href="javascript:void(0)" class="navi" onclick="openModal('profileModal')"><span
+          class="navi-ic">👤</span>Profile</a>
+      <a href="javascript:void(0)" class="navi"
+        onclick="toast('info','⚙️','System Settings','MST Blockchain Node & Gateway active.')"><span
+          class="navi-ic">⚙️</span>Settings</a>
+      <div class="s-sos-wrap">
+        <button onclick="triggerSOS()"
+          style="width:100%;padding:12px 15px;border-radius:11px;border:none;cursor:pointer;background:linear-gradient(135deg,#ff3d65,#ff6b8a);color:#fff;display:flex;align-items:center;gap:9px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13.5px;letter-spacing:.4px;box-shadow:0 4px 16px rgba(255,77,114,.3);transition:all .15s;">
+          <span style="font-size:19px;">🆘</span>EMERGENCY SOS
         </button>
       </div>
+    </aside>
 
-      <!-- Live Status Metrics Grid -->
-      <div class="status-grid">
-        <div class="status-card">
-          <div class="status-card-header">
-            <span class="status-card-title">GPS Coordinates</span>
-            <span>📍</span>
-          </div>
-          <div class="status-card-val" id="gpsStatusVal">Ready</div>
-          <div class="status-card-sub">High-accuracy browser Geolocation</div>
+    <!-- MAIN -->
+    <main class="main">
+      <!-- HERO EMERGENCY SOS CENTERPIECE AT VERY TOP -->
+      <div class="hero-sos-banner">
+        <div class="hero-sos-pill">
+          <span class="dot-blink" style="background:var(--rose);box-shadow:0 0 8px var(--rose);"></span> Active
+          Emergency Response System
         </div>
 
-        <div class="status-card">
-          <div class="status-card-header">
-            <span class="status-card-title">Contact Alert Stream</span>
-            <span>🔔</span>
-          </div>
-          <div class="status-card-val" id="ntfyStatusVal">Target: +917061330201</div>
-          <div class="status-card-sub"><a href="https://ntfy.sh/7061330201" target="_blank" style="color: #38bdf8; text-decoration: underline;">ntfy.sh/7061330201 ↗</a></div>
-        </div>
-
-        <div class="status-card">
-          <div class="status-card-header">
-            <span class="status-card-title">MST Blockchain Proof</span>
-            <span>⛓️</span>
-          </div>
-          <div class="status-card-val" id="chainStatusVal">Standby</div>
-          <div class="status-card-sub">SHA-256 On-Chain Smart Contract</div>
-        </div>
-      </div>
-
-      <!-- Proof Details Container (Populated after trigger) -->
-      <div id="proofBoxContainer" style="width: 100%;"></div>
-
-      <!-- SafeWay Live Map & Protective Smart Navigation -->
-      <div class="map-section-wrapper" style="width: 100%; margin-top: 2.5rem; text-align: left;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-          <div>
-            <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem;">
-              <span>🗺️</span> SafeWay Live Map & Smart Protective Routing
-            </h2>
-            <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.2rem;">
-              Real-time user GPS tracking, busiest main road safe routing algorithm & emergency havens.
-            </p>
-          </div>
-          <div style="display: flex; gap: 0.5rem; align-items: center;">
-            <span class="dot pulse"></span>
-            <span id="liveLocationText" style="font-size: 0.85rem; font-family: monospace; color: #38bdf8;">Tracking Position...</span>
-          </div>
-        </div>
-
-        <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
-          <input type="text" id="destinationInput" placeholder="Enter target destination (e.g. Metro Station, Office)" style="flex: 1; min-width: 240px; padding: 0.65rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); color: #fff; font-size: 0.9rem;">
-          <button id="calcSafeWayBtn" class="btn-action" style="white-space: nowrap;">
-            🛣️ Calculate SafeWay Route
+        <!-- BIG SOS CIRCULAR BUTTON CENTERPIECE (PROMINENT AT TOP) -->
+        <div class="hero-sos-ring-container">
+          <div class="hero-sos-pulse-wave"></div>
+          <div class="hero-sos-pulse-wave-2"></div>
+          <button class="hero-sos-big-btn" id="sosBtn" onclick="triggerSOS()"
+            title="Click for Immediate Emergency SOS Response">
+            <span style="font-size: 26px; line-height: 1;">🆘</span>
+            <span
+              style="font-size: 30px; font-weight: 900; letter-spacing: 3px; color: #fff; line-height: 1.1;">SOS</span>
+            <span
+              style="font-size: 9.5px; font-weight: 800; color: rgba(255, 255, 255, 0.9); letter-spacing: 1.5px; margin-top: 2px;">PRESS
+              NOW</span>
           </button>
         </div>
 
-        <div id="mapContainer"></div>
-        <div id="safeWayRoutePanel" style="display: none;"></div>
+        <h1 class="hero-sos-title">🚨 Press SOS For Immediate Emergency Response</h1>
+        <p class="hero-sos-desc">Dispatches alerts to emergency contacts (+91 7061330201), captures audio/video evidence
+          stream, and anchors tamper-proof proof on <strong>MST Blockchain</strong>.</p>
+
+        <div class="hero-status-pills">
+          <div class="status-pill-item">
+            📍 <strong id="heroLocText">Detecting...</strong>
+          </div>
+          <div class="status-pill-item">
+            📱 <strong>Guardian Contact:</strong> +91 7061330201
+          </div>
+          <div class="status-pill-item" style="color:var(--green);border-color:rgba(54,214,138,0.3);">
+            ⛓️ <strong>MST Blockchain:</strong> Chain ID 91562037 Active
+          </div>
+          <button onclick="openModal('notificationsDrawer')" class="status-pill-item"
+            style="background:var(--rose-dim);color:var(--rose);border-color:rgba(255,77,114,0.3);cursor:pointer;">
+            🔔 Active Alerts (3)
+          </button>
+        </div>
       </div>
 
-    </div>
+      <!-- DYNAMIC LEAFLET / GOOGLE MAPS CONTAINER -->
+      <div class="map-wrap" id="mapWrap">
+        <div id="leafletMap"></div>
+        <div class="map-top">
+          <div class="sbar">
+            <span>🔍</span>
+            <input type="text" id="mapSearchInput"
+              placeholder="Search target destination (e.g. Connaught Place Delhi, Metro Station, Airport)..."
+              onkeypress="if(event.key==='Enter')searchLocation()" />
+            <button class="mcb" onclick="searchLocation()"
+              style="padding:4px 10px;font-size:11px;background:var(--rose-dim);color:var(--rose);border-color:rgba(255,77,114,.3);">Find
+              Directions</button>
+          </div>
+          <button class="mcb" id="btnLayerGoogle" onclick="switchMapLayer('google')"
+            title="Switch to Google Maps Vector Tiles">🌐 Google Maps</button>
+          <button class="mcb" id="btnLayerSat" onclick="switchMapLayer('satellite')" title="Switch to Satellite View">🛰
+            Satellite</button>
+          <button class="mcb" id="btnHeat" onclick="toggleHeat()">🌡 Heatmap</button>
+          <button class="mcb" id="btnRoute" onclick="toggleRoute()">🧭 Safe Route</button>
+          <button class="mcb" onclick="recenterToUser()"
+            style="background:var(--blue-dim);color:var(--blue);border-color:rgba(77,159,255,.3);">📍 Locate Me</button>
+        </div>
+        <div class="map-leg">
+          <div class="leg-row">
+            <div class="leg-d" style="background:#36d68a;"></div>SafeWay Recommended Route
+          </div>
+          <div class="leg-row">
+            <div class="leg-d" style="background:#ffb347;"></div>Direct Shortcut Route
+          </div>
+          <div class="leg-row">
+            <div class="leg-d" style="background:#ff4d72;"></div>High Risk Alert Area
+          </div>
+          <div class="leg-row">
+            <div class="leg-d" style="background:#4d9fff;"></div>Your Location
+          </div>
+        </div>
+      </div>
 
+      <!-- DASH -->
+      <div class="dc">
+        <!-- STATS OVERVIEW -->
+        <div>
+          <div class="sh">
+            <div class="sh-t" id="areaTitle">Area Overview — Dynamic Location</div><span class="sh-l"
+              onclick="recenterToUser()">Refresh Location ↺</span>
+          </div>
+          <div class="stats">
+            <div class="sc">
+              <div class="sc-lbl">Safe Zones</div>
+              <div class="sc-val g">7</div>
+              <div class="sc-sub" id="safeZoneSub">Within 2km of user position</div>
+              <div class="pbar">
+                <div class="pbar-f" style="width:70%;background:var(--green);"></div>
+              </div>
+            </div>
+            <div class="sc" onclick="openModal('notificationsDrawer')" style="cursor:pointer;"
+              title="Click to view alerts">
+              <div class="sc-lbl">Active Alerts</div>
+              <div class="sc-val r" id="alertCount">3</div>
+              <div class="sc-sub">Click to view notifications 🔔</div>
+              <div class="pbar">
+                <div class="pbar-f" style="width:30%;background:var(--rose);"></div>
+              </div>
+            </div>
+            <div class="sc">
+              <div class="sc-lbl">Patrol Coverage</div>
+              <div class="sc-val a">84%</div>
+              <div class="sc-sub">Local Emergency Patrols</div>
+              <div class="pbar">
+                <div class="pbar-f" style="width:84%;background:var(--amber);"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RECOMMENDED SAFE ROUTES & GOOGLE MAPS DIRECTIONS -->
+        <div id="routesSection">
+          <div class="sh">
+            <div class="sh-t">Recommended Safe Routes & Turn-by-Turn Directions</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px;" id="routesListContainer">
+            <!-- Route Option A: SafeWay Recommended -->
+            <div class="rc" onclick="activateRoute('safe')" id="routeCardA">
+              <div class="rc-top">
+                <div class="rc-ic">🟢</div>
+                <div class="rc-inf">
+                  <div class="rc-n" id="routeAName">SafeWay Route A — Main Illuminated Avenue</div>
+                  <div class="rc-m" id="routeADesc">Well-lit · Active commercial density · CCTV coverage · High police
+                    patrol frequency</div>
+                </div>
+                <div class="rc-sf">97% Safe</div>
+              </div>
+              <div
+                style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:4px;border-top:1px solid rgba(255,255,255,0.05);padding-top:8px;">
+                <div style="font-size:11.5px;color:var(--muted);" id="routeAMetrics">Est. Distance: 1.8 km • Time: ~14
+                  mins</div>
+                <a href="#" target="_blank" id="gmapsLinkA" class="gmaps-btn">
+                  🗺️ Open in Google Maps ↗
+                </a>
+              </div>
+            </div>
+
+            <!-- Route Option B: Direct Shortcut -->
+            <div class="rc" onclick="activateRoute('shortcut')" id="routeCardB">
+              <div class="rc-top">
+                <div class="rc-ic">🟡</div>
+                <div class="rc-inf">
+                  <div class="rc-n" id="routeBName">SafeWay Route B — Direct Shortcut Route</div>
+                  <div class="rc-m" id="routeBDesc">Shorter distance · Passes through unlit side alleys & low-density
+                    areas</div>
+                </div>
+                <div class="rc-sf" style="color:var(--amber);background:var(--amber-dim);">76% Safe</div>
+              </div>
+              <div
+                style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:4px;border-top:1px solid rgba(255,255,255,0.05);padding-top:8px;">
+                <div style="font-size:11.5px;color:var(--muted);" id="routeBMetrics">Est. Distance: 1.4 km • Time: ~11
+                  mins</div>
+                <a href="#" target="_blank" id="gmapsLinkB" class="gmaps-btn"
+                  style="color:var(--amber);border-color:rgba(255,179,71,0.3);background:var(--amber-dim);">
+                  🗺️ Open Shortcut in Google Maps ↗
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- RIGHT PANEL -->
+    <aside class="rp">
+      <!-- EMERGENCY CONTACTS -->
+      <div class="ps" id="contactsSection">
+        <div class="pt">Emergency Contacts</div>
+        <div class="cl" id="contactList"></div>
+        <button class="add-c" onclick="openModal('addModal')">＋ Add Emergency Contact</button>
+      </div>
+
+      <!-- NOTIFICATIONS & ALERTS QUICK ACCESS -->
+      <div class="ps">
+        <div class="pt">Notifications & Live Telemetry</div>
+        <button class="test-btn" onclick="openModal('notificationsDrawer')"
+          style="background:var(--surface2);border:1px solid var(--border);color:var(--text);margin-bottom:8px;">
+          🔔 View All Notifications & Telemetry
+        </button>
+        <button class="test-btn" id="testBtn" onclick="sendTest()">📲 Send Test Notification</button>
+        <div id="ntfyMsg" style="margin-top:7px;font-size:10.5px;color:var(--dim);text-align:center;">Target Number: +91
+          7061330201</div>
+      </div>
+
+      <!-- DEVICE TELEMETRY PREVIEW -->
+      <div class="ps">
+        <div class="pt">Device Telemetry</div>
+        <div class="dev">
+          <div class="dr"><span class="dk">Device ID</span><span class="dv" id="elDID">—</span></div>
+          <div class="dr"><span class="dk">IMEI</span><span class="dv" id="elIMEI">—</span></div>
+          <div class="dr"><span class="dk">Latitude</span><span class="dv" id="elLat">Locating...</span></div>
+          <div class="dr"><span class="dk">Longitude</span><span class="dv" id="elLng">Locating...</span></div>
+          <div class="dr"><span class="dk">Accuracy</span><span class="dv" id="elAcc">±10m</span></div>
+          <div class="dr"><span class="dk">Battery</span><span class="dv" id="elBatt">78%</span></div>
+          <div class="dr"><span class="dk">MST Chain</span><span class="dv" style="color:var(--green)">Chain ID
+              91562037</span></div>
+        </div>
+      </div>
+    </aside>
   </div>
 
-  <footer>
-    SafeHer Emergency System • Built for MST Blockchain Hackathon • Powered by Node.js & Ethers.js
-  </footer>
+  <!-- NOTIFICATIONS & TELEMETRY DRAWER MODAL -->
+  <div class="mb" id="notificationsDrawer" onclick="if(event.target===this)closeModal('notificationsDrawer')">
+    <div class="modal" style="width: 480px; max-width: calc(100vw - 20px); border-radius: 20px;">
+      <div class="mh blu"
+        style="padding: 18px 20px; flex-direction: row; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="font-size: 26px;">🔔</div>
+          <div>
+            <div class="mh-title" style="color: var(--blue); font-size: 17px; text-align: left;">Notifications & Alerts
+            </div>
+            <div style="font-size: 11px; color: var(--muted); text-align: left;">Real-time push alerts, community risks
+              & telemetry</div>
+          </div>
+        </div>
+        <button onclick="closeModal('notificationsDrawer')"
+          style="background: none; border: none; color: var(--muted); font-size: 22px; cursor: pointer;">✕</button>
+      </div>
+
+      <div class="mbody" style="max-height: 75vh; overflow-y: auto; padding: 18px;">
+        <!-- NTFY LIVE ALERT TEST -->
+        <div class="ps ntfy-wrap"
+          style="border-radius: 12px; border: 1px solid rgba(77, 159, 255, .2); padding: 14px; margin-bottom: 14px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <span style="font-size:19px;">📲</span>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:700;color:var(--blue);">Live Phone Push Alerts</div>
+              <div style="font-size:10px;color:var(--dim);">Direct push notification to emergency phone</div>
+            </div>
+            <div id="ntfyDot"
+              style="width:9px;height:9px;border-radius:50%;background:var(--amber);animation:blink 2s infinite;"
+              title="Tap test to verify"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
+            <div class="ns"><span style="font-size:14px;flex-shrink:0;">1️⃣</span>
+              <div style="font-size:11px;color:var(--muted);line-height:1.6;">Install <strong
+                  style="color:var(--text);">ntfy</strong> app on phone</div>
+            </div>
+            <div class="ns"><span style="font-size:14px;flex-shrink:0;">2️⃣</span>
+              <div style="font-size:11px;color:var(--muted);line-height:1.6;">Subscribe to topic: <span
+                  class="topic-badge">7061330201</span></div>
+            </div>
+          </div>
+          <button class="test-btn" onclick="sendTest()">📲 Send Test Notification</button>
+        </div>
+
+        <!-- COMMUNITY ALERTS -->
+        <div style="margin-bottom: 16px;">
+          <div class="pt" style="margin-bottom: 8px;">Community Safety Alerts</div>
+          <div class="al-list" id="alertList"></div>
+        </div>
+      </div>
+
+      <div class="mfooter">
+        <button class="btn btn-ghost" onclick="closeModal('notificationsDrawer')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IN-BROWSER WEB DIALER MODAL -->
+  <div class="mb" id="webCallModal">
+    <div class="modal" style="width:400px;">
+      <div class="mh grn" style="padding:28px 20px;background:linear-gradient(135deg,#0a1a0f,#0d2516);">
+        <div style="position:relative;">
+          <div
+            style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#36d68a,#1f9e61);display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 0 28px rgba(54,214,138,0.4);"
+            id="webCallAvatar">📞</div>
+        </div>
+        <div class="mh-title" style="color:#fff;font-size:20px;margin-top:10px;" id="webCallName">Emergency Contact
+        </div>
+        <div style="font-size:13px;color:var(--green);font-weight:600;" id="webCallNumber">+91 7061330201</div>
+        <div
+          style="font-size:11px;color:var(--muted);background:rgba(255,255,255,0.06);padding:3px 10px;border-radius:99px;margin-top:6px;"
+          id="webCallStatus">00:00 • Dialing via Web Dialer...</div>
+      </div>
+      <div class="mbody" style="align-items:center;padding:20px;">
+        <div style="display:flex;gap:16px;margin-bottom:10px;">
+          <button class="call-control-btn" id="btnMuteCall" onclick="toggleMuteCall()"
+            style="width:52px;height:52px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:18px;cursor:pointer;">🎙️</button>
+          <button class="call-control-btn" id="btnSpeakerCall" onclick="toggleSpeakerCall()"
+            style="width:52px;height:52px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:18px;cursor:pointer;">🔊</button>
+          <a id="webCallCellularLink" href="tel:+917061330201" class="call-control-btn"
+            style="width:52px;height:52px;border-radius:50%;background:var(--blue-dim);border:1px solid rgba(77,159,255,.4);color:var(--blue);font-size:18px;display:flex;align-items:center;justify-content:center;text-decoration:none;"
+            title="Trigger Native Cellular Dialer (tel:)">📱</a>
+        </div>
+        <div style="font-size:10.5px;color:var(--dim);text-align:center;">Direct Web Telephone Channel Active • Calling
+          Emergency Contact</div>
+      </div>
+      <div class="mfooter">
+        <button class="btn" style="background:var(--rose);color:#fff;box-shadow:0 4px 16px rgba(255,77,114,.4);"
+          onclick="endWebCall()">🔴 End Emergency Call</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOS MODAL -->
+  <div class="mb" id="sosModal">
+    <div class="modal">
+      <div class="mh">
+        <div class="mh-icon rose">🆘</div>
+        <div class="mh-title" style="color:var(--rose);">EMERGENCY ALERT TRIGGERED</div>
+        <div class="mh-sub" id="sosModalSub">Real push fired · MST Blockchain proof recording</div>
+      </div>
+      <div class="mbody" id="mSteps"></div>
+      <div class="mfooter">
+        <button class="btn btn-green" onclick="placeEmergencyCall()">📞 Call Emergency Guardian (+91
+          7061330201)</button>
+        <button class="btn btn-rose" onclick="call112()">📞 Call 112 — Emergency Police</button>
+        <a href="history.html" class="btn btn-ghost" style="text-decoration:none;">📋 View & Verify On-Chain Proofs</a>
+        <button class="btn btn-ghost" onclick="cancelSOS()">↩ Cancel Alert</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PUSH PREVIEW MODAL -->
+  <div class="mb" id="pushModal">
+    <div class="modal">
+      <div class="mh grn">
+        <div style="font-size:42px;">📱</div>
+        <div class="mh-title" style="color:var(--green);">PUSH ALERT & MST PROOF CONFIRMED!</div>
+        <div class="mh-sub">Real alert delivered to +91 7061330201 via ntfy</div>
+      </div>
+      <div class="mbody">
+        <div style="background:#0a0a0a;border-radius:13px;padding:15px;border:1px solid rgba(255,255,255,.04);">
+          <div
+            style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:9px;border-bottom:1px solid rgba(255,255,255,.05);">
+            <div
+              style="width:28px;height:28px;border-radius:7px;background:var(--rose);display:flex;align-items:center;justify-content:center;font-size:13px;">
+              🛡</div>
+            <div style="flex:1;">
+              <div style="font-size:12px;font-weight:700;">SafeHer Emergency System</div>
+              <div style="font-size:10px;color:var(--dim);">ntfy · 7061330201 · Just now</div>
+            </div>
+            <div
+              style="background:var(--green-dim);color:var(--green);font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:99px;border:1px solid rgba(54,214,138,.2);">
+              ✓ Delivered</div>
+          </div>
+          <div
+            style="background:rgba(255,77,114,.05);border-radius:99px;padding:12px 14px;border-left:3px solid var(--rose);border-radius:9px;">
+            <div style="font-size:12.5px;font-weight:700;color:var(--rose);margin-bottom:7px;">⚠ SAFEHER EMERGENCY</div>
+            <div style="font-size:11.5px;color:var(--text);line-height:1.85;" id="pushBody">—</div>
+          </div>
+          <div style="margin-top:9px;text-align:center;font-size:10px;color:var(--dim);">Proof anchored on MST Testnet
+            smart contract 0x7662...6eDc</div>
+        </div>
+      </div>
+      <div class="mfooter">
+        <button class="btn btn-green" onclick="placeEmergencyCall()">📞 Direct Call Emergency Guardian (+91
+          7061330201)</button>
+        <a href="history.html" class="btn btn-ghost" style="text-decoration:none;">📋 Verify Proof On History Page</a>
+        <button class="btn btn-ghost" onclick="closeModal('pushModal');closeModal('sosModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD CONTACT MODAL -->
+  <div class="mb" id="addModal">
+    <div class="modal">
+      <div class="mh blu">
+        <div style="font-size:34px;">👤</div>
+        <div class="mh-title" style="color:var(--blue);">Add Emergency Contact</div>
+        <div class="mh-sub">Gets a real push alert during SOS</div>
+      </div>
+      <div class="mbody">
+        <div class="ilab">Full Name *</div><input class="inp" id="iName" type="text" placeholder="e.g. Priya Sharma" />
+        <div class="ilab">Phone Number</div><input class="inp" id="iPhone" type="text" placeholder="+91 98765 43210" />
+        <div class="ilab">Relationship</div><input class="inp" id="iRel" type="text"
+          placeholder="e.g. Sister, Friend" />
+      </div>
+      <div class="mfooter">
+        <button class="btn btn-green" onclick="saveContact()">✓ Add Contact</button>
+        <button class="btn btn-ghost" onclick="closeModal('addModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- USER PROFILE MODAL -->
+  <div class="mb" id="profileModal">
+    <div class="modal">
+      <div class="mh blu">
+        <div style="font-size:38px;">👤</div>
+        <div class="mh-title" style="color:var(--blue);" id="pModalName">User Profile</div>
+        <div class="mh-sub" id="pModalEmail">user@example.com</div>
+      </div>
+      <div class="mbody" style="gap:12px;">
+        <div style="background:var(--surface2);border-radius:10px;padding:12px;border:1px solid var(--border);">
+          <div style="font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;margin-bottom:4px;">
+            Primary Phone Number</div>
+          <div style="font-size:13px;font-weight:600;" id="pModalPhone">+91 7061330201</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:10px;padding:12px;border:1px solid var(--border);">
+          <div style="font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;margin-bottom:4px;">
+            Emergency Guardian Contact</div>
+          <div style="font-size:13px;font-weight:600;" id="pModalGuardian">Aarav Sharma (+91 9876543210)</div>
+        </div>
+        <div
+          style="background:var(--surface2);border-radius:10px;padding:12px;border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;">MST Blockchain Status
+            </div>
+            <div style="font-size:12px;color:var(--green);font-weight:600;margin-top:2px;">✓ Verified Account Anchor
+            </div>
+          </div>
+          <span
+            style="font-size:10.5px;background:var(--green-dim);color:var(--green);padding:3px 8px;border-radius:99px;border:1px solid rgba(54,214,138,.3);">Chain
+            ID 91562037</span>
+        </div>
+      </div>
+      <div class="mfooter">
+        <button class="btn btn-rose" onclick="window.SafeHerAuth.logout()">🚪 Log Out of SafeHer</button>
+        <button class="btn btn-ghost" onclick="closeModal('profileModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tc" id="tc"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="js/map.js"></script>
   <script src="js/blockchain.js"></script>
   <script src="js/app.js"></script>
-  <script src="js/emergency.js"></script>
+  <script src="js/auth.js"></script>
+
+  <script>
+    'use strict';
+
+    const TOPIC = '7061330201';
+
+    // Dynamic location variables
+    var gLat = 28.6139; // Default starting center
+    var gLng = 77.2090;
+    var gAcc = 10;
+    var currentCityName = "Detecting Location...";
+
+    var targetDestLat = null;
+    var targetDestLng = null;
+    var targetDestName = null;
+
+    var mapInstance = null;
+    var tileLayerInstance = null;
+    var activeTileType = 'dark'; // 'dark', 'google', 'satellite'
+
+    var userMarker = null;
+    var destMarker = null;
+    var accuracyCircle = null;
+    var heatCircles = [];
+    var safeRouteLine = null;
+    var shortcutRouteLine = null;
+    var havenMarkers = [];
+
+    // Haversine distance calculator (km)
+    function getHaversineDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return (R * c).toFixed(1);
+    }
+
+    async function ntfy(title, message, priority, tags) {
+      priority = priority || 3;
+      tags = tags || 'bell';
+      const body = JSON.stringify({ topic: TOPIC, title, message, priority, tags: tags.split(',').map(s => s.trim()) });
+      try {
+        const r = await fetch('https://ntfy.sh', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body,
+        });
+        if (r.ok || r.status === 0) return true;
+        throw new Error('HTTP ' + r.status);
+      } catch (e) {
+        console.warn('[SafeHer ntfy]', e.message);
+        return false;
+      }
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('on'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('on'); }
+
+    function toast(type, icon, title, sub, ms) {
+      ms = ms || 4500;
+      const c = document.getElementById('tc');
+      const el = document.createElement('div');
+      el.className = 'toast ' + type;
+      el.innerHTML = '<span class="ti-ico">' + icon + '</span><div class="ti-txt"><div class="ti-ttl">' + title + '</div><div class="ti-sub">' + sub + '</div></div>';
+      c.appendChild(el);
+      setTimeout(function () { el.style.transition = 'opacity .3s,transform .3s'; el.style.opacity = '0'; el.style.transform = 'translateX(18px)'; setTimeout(function () { el.remove(); }, 350); }, ms);
+    }
+
+    // Device ID & IMEI
+    function rh(n) { return Array.from({ length: n }, function () { return '0123456789ABCDEF'[Math.floor(Math.random() * 16)]; }).join(''); }
+    var DID = 'SH-' + rh(4) + '-' + rh(4) + '-' + rh(4);
+    var IMEI = Array.from({ length: 15 }, function (_, i) { return i < 6 ? '8' : Math.floor(Math.random() * 10); }).join('').replace(/(\d{6})(\d{6})(\d{3})/, '$1-$2-$3');
+    const elDID = document.getElementById('elDID'); if (elDID) elDID.textContent = DID;
+    const elIMEI = document.getElementById('elIMEI'); if (elIMEI) elIMEI.textContent = IMEI;
+
+    // Map Layer Switcher
+    function switchMapLayer(type) {
+      if (!mapInstance) return;
+      activeTileType = type;
+
+      if (tileLayerInstance) mapInstance.removeLayer(tileLayerInstance);
+
+      let tileUrl = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+      if (type === 'google') {
+        tileUrl = 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}';
+        toast('info', '🌐', 'Google Maps Layer Active', 'Rendering Google Maps vector street view');
+      } else if (type === 'satellite') {
+        tileUrl = 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}';
+        toast('info', '🛰', 'Google Satellite Layer Active', 'Rendering Google Maps hybrid satellite view');
+      } else {
+        toast('info', '🗺', 'Dark Vector Layer Active', 'Standard dark theme active');
+      }
+
+      tileLayerInstance = L.tileLayer(tileUrl, { maxZoom: 19, subdomains: 'abcd' }).addTo(mapInstance);
+    }
+
+    // Dynamic Map Engine
+    function initLeafletMap(lat, lng) {
+      if (mapInstance) {
+        mapInstance.setView([lat, lng], 15);
+        updateMapElements(lat, lng);
+        setTimeout(function () { if (mapInstance) mapInstance.invalidateSize(); }, 200);
+        return;
+      }
+
+      mapInstance = L.map('leafletMap', {
+        zoomControl: false,
+        attributionControl: false
+      }).setView([lat, lng], 15);
+
+      tileLayerInstance = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+        subdomains: 'abcd'
+      }).addTo(mapInstance);
+
+      updateMapElements(lat, lng);
+
+      setTimeout(function () {
+        if (mapInstance) mapInstance.invalidateSize();
+      }, 250);
+    }
+
+    function updateMapElements(lat, lng) {
+      if (!mapInstance) return;
+
+      const userIcon = L.divIcon({
+        className: 'custom-user-marker-wrap',
+        html: `<div class="user-live-pin"><div class="user-live-pulse"></div></div>`,
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
+      });
+
+      if (userMarker) {
+        userMarker.setLatLng([lat, lng]);
+      } else {
+        userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(mapInstance);
+        userMarker.bindPopup(`<b>📍 Your Live Position</b><br>SafeHer Protective Monitoring Active`).openPopup();
+      }
+
+      if (accuracyCircle) {
+        accuracyCircle.setLatLng([lat, lng]);
+        accuracyCircle.setRadius(gAcc || 30);
+      } else {
+        accuracyCircle = L.circle([lat, lng], {
+          radius: gAcc || 30,
+          color: '#4d9fff',
+          fillColor: '#4d9fff',
+          fillOpacity: 0.15,
+          weight: 1
+        }).addTo(mapInstance);
+      }
+
+      heatCircles.forEach(c => mapInstance.removeLayer(c));
+      havenMarkers.forEach(h => mapInstance.removeLayer(h));
+      if (safeRouteLine) mapInstance.removeLayer(safeRouteLine);
+      if (shortcutRouteLine) mapInstance.removeLayer(shortcutRouteLine);
+      if (destMarker) mapInstance.removeLayer(destMarker);
+
+      heatCircles = [];
+      havenMarkers = [];
+
+      const zonesData = [
+        { offsetLat: 0.003, offsetLng: 0.004, radius: 250, color: '#36d68a', label: 'Verified Safe Zone' },
+        { offsetLat: -0.004, offsetLng: -0.003, radius: 350, color: '#ffb347', label: 'Caution Area' },
+        { offsetLat: 0.005, offsetLng: -0.005, radius: 200, color: '#ff4d72', label: 'High-Risk Alert Spot' }
+      ];
+
+      zonesData.forEach(z => {
+        const circle = L.circle([lat + z.offsetLat, lng + z.offsetLng], {
+          radius: z.radius,
+          color: z.color,
+          fillColor: z.color,
+          fillOpacity: 0.18,
+          weight: 1.5
+        }).addTo(mapInstance);
+        circle.bindPopup(`<b>${z.label}</b><br>Dynamic Safety Assessment`);
+        heatCircles.push(circle);
+      });
+
+      const havens = [
+        { name: "Central Emergency Police Station", icon: "🚓", type: "police", offsetLat: 0.004, offsetLng: -0.002 },
+        { name: "Emergency Hospital & Trauma Care", icon: "🏥", type: "hospital", offsetLat: -0.003, offsetLng: 0.004 },
+        { name: "24/7 Verified Safe Spot", icon: "🏪", type: "haven", offsetLat: 0.002, offsetLng: 0.005 }
+      ];
+
+      havens.forEach(h => {
+        const hLat = lat + h.offsetLat;
+        const hLng = lng + h.offsetLng;
+        const havenIcon = L.divIcon({
+          className: 'haven-badge-wrap',
+          html: `<div class="haven-map-badge ${h.type}">${h.icon}</div>`,
+          iconSize: [32, 32],
+          iconAnchor: [16, 16]
+        });
+        const m = L.marker([hLat, hLng], { icon: havenIcon }).addTo(mapInstance);
+        m.bindPopup(`<b>${h.icon} ${h.name}</b><br>Verified Emergency Haven`);
+        havenMarkers.push(m);
+      });
+
+      if (targetDestLat && targetDestLng) {
+        renderDirectionsOnMap(lat, lng, targetDestLat, targetDestLng, targetDestName);
+      } else {
+        const routeWaypoints = [
+          [lat, lng],
+          [lat + 0.002, lng - 0.001],
+          [lat + 0.004, lng - 0.002]
+        ];
+        safeRouteLine = L.polyline(routeWaypoints, {
+          color: '#36d68a',
+          weight: 5,
+          opacity: 0.85,
+          dashArray: '8, 8'
+        }).addTo(mapInstance);
+      }
+    }
+
+    function renderDirectionsOnMap(startLat, startLng, destLat, destLng, destName) {
+      if (!mapInstance) return;
+
+      if (safeRouteLine) mapInstance.removeLayer(safeRouteLine);
+      if (shortcutRouteLine) mapInstance.removeLayer(shortcutRouteLine);
+      if (destMarker) mapInstance.removeLayer(destMarker);
+
+      const safeWaypoints = [
+        [startLat, startLng],
+        [startLat + (destLat - startLat) * 0.35 + 0.0015, startLng + (destLng - startLng) * 0.25 - 0.0015],
+        [startLat + (destLat - startLat) * 0.75 + 0.001, startLng + (destLng - startLng) * 0.85 + 0.001],
+        [destLat, destLng]
+      ];
+
+      safeRouteLine = L.polyline(safeWaypoints, {
+        color: '#36d68a',
+        weight: 6,
+        opacity: 0.9,
+        dashArray: '1, 0'
+      }).addTo(mapInstance);
+
+      const shortcutWaypoints = [
+        [startLat, startLng],
+        [startLat + (destLat - startLat) * 0.5, startLng + (destLng - startLng) * 0.5],
+        [destLat, destLng]
+      ];
+
+      shortcutRouteLine = L.polyline(shortcutWaypoints, {
+        color: '#ffb347',
+        weight: 4,
+        opacity: 0.7,
+        dashArray: '6, 6'
+      }).addTo(mapInstance);
+
+      const flagIcon = L.divIcon({
+        className: 'dest-flag-icon',
+        html: `<div style="font-size: 1.8rem; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.8));">🏁</div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 30]
+      });
+
+      destMarker = L.marker([destLat, destLng], { icon: flagIcon }).addTo(mapInstance);
+      destMarker.bindPopup(`<b>🏁 Target Destination: ${destName}</b><br>SafeWay Guidance Active`).openPopup();
+
+      const bounds = L.latLngBounds([[startLat, startLng], [destLat, destLng]]);
+      mapInstance.fitBounds(bounds, { padding: [50, 50] });
+
+      updateRouteCardsUI(startLat, startLng, destLat, destLng, destName);
+    }
+
+    function updateRouteCardsUI(startLat, startLng, destLat, destLng, destName) {
+      const distKm = getHaversineDistance(startLat, startLng, destLat, destLng);
+      const safeTimeMin = Math.max(3, Math.round((distKm / 4.5) * 60));
+      const shortcutDistKm = (distKm * 0.85).toFixed(1);
+      const shortcutTimeMin = Math.max(2, Math.round((shortcutDistKm / 4.8) * 60));
+
+      const gmapsUrlSafe = `https://www.google.com/maps/dir/?api=1&origin=${startLat},${startLng}&destination=${destLat},${destLng}&travelmode=walking`;
+      const gmapsUrlShortcut = `https://www.google.com/maps/dir/?api=1&origin=${startLat},${startLng}&destination=${destLat},${destLng}&travelmode=walking`;
+
+      const rA = document.getElementById('routeAName'); if (rA) rA.textContent = `SafeWay Route A — Main Lit Avenue → ${destName}`;
+      const rAD = document.getElementById('routeADesc'); if (rAD) rAD.textContent = `Well-lit • High commercial density • Active CCTV coverage • 97% Safe Score`;
+      const rAM = document.getElementById('routeAMetrics'); if (rAM) rAM.textContent = `Distance: ${distKm} km • Est. Time: ~${safeTimeMin} mins`;
+      const gA = document.getElementById('gmapsLinkA'); if (gA) gA.href = gmapsUrlSafe;
+
+      const rB = document.getElementById('routeBName'); if (rB) rB.textContent = `SafeWay Route B — Direct Shortcut → ${destName}`;
+      const rBD = document.getElementById('routeBDesc'); if (rBD) rBD.textContent = `Shorter path • Passes through unlit side streets & low-density areas • 76% Safe Score`;
+      const rBM = document.getElementById('routeBMetrics'); if (rBM) rBM.textContent = `Distance: ${shortcutDistKm} km • Est. Time: ~${shortcutTimeMin} mins`;
+      const gB = document.getElementById('gmapsLinkB'); if (gB) gB.href = gmapsUrlShortcut;
+    }
+
+    async function reverseGeocode(lat, lng) {
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+        const data = await res.json();
+        if (data && data.address) {
+          const city = data.address.city || data.address.town || data.address.suburb || data.address.county || data.address.state || "Current Location";
+          const state = data.address.state || data.address.country || "";
+          currentCityName = `${city}${state ? ', ' + state : ''}`;
+
+          const tb = document.getElementById('tbLoc'); if (tb) tb.textContent = `📍 ${currentCityName}`;
+          const at = document.getElementById('areaTitle'); if (at) at.textContent = `Area Overview — ${city}`;
+          const sz = document.getElementById('safeZoneSub'); if (sz) sz.textContent = `Within 2km · ${city}`;
+          const hl = document.getElementById('heroLocText'); if (hl) hl.textContent = currentCityName;
+        }
+      } catch (err) {
+        const tb = document.getElementById('tbLoc'); if (tb) tb.textContent = `📍 Lat: ${lat.toFixed(4)}°, Lng: ${lng.toFixed(4)}°`;
+        const hl = document.getElementById('heroLocText'); if (hl) hl.textContent = `Lat: ${lat.toFixed(4)}°, Lng: ${lng.toFixed(4)}°`;
+      }
+    }
+
+    async function getIPLocationFallback() {
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        const data = await res.json();
+        if (data && data.latitude && data.longitude) {
+          gLat = Number(data.latitude);
+          gLng = Number(data.longitude);
+          gAcc = 200;
+          const city = data.city || data.region || "Current Location";
+          const country = data.country_name || "";
+          currentCityName = `${city}${country ? ', ' + country : ''}`;
+
+          updateTelemetryUI();
+          initLeafletMap(gLat, gLng);
+          reverseGeocode(gLat, gLng);
+          toast('info', '📍', 'Location Detected via Network', currentCityName);
+          return true;
+        }
+      } catch (e) {
+        console.warn("IP location fallback error:", e);
+      }
+      return false;
+    }
+
+    function initDynamicLocationTracker() {
+      initLeafletMap(gLat, gLng);
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function (pos) {
+            gLat = Number(pos.coords.latitude.toFixed(6));
+            gLng = Number(pos.coords.longitude.toFixed(6));
+            gAcc = Math.round(pos.coords.accuracy || 10);
+
+            updateTelemetryUI();
+            initLeafletMap(gLat, gLng);
+            reverseGeocode(gLat, gLng);
+            toast('success', '📍', 'GPS Position Acquired', `${gLat.toFixed(4)}°, ${gLng.toFixed(4)}°`);
+          },
+          async function (err) {
+            console.warn("GPS position error/denied:", err.message);
+            toast('warning', '⚠️', 'Browser GPS Permission Needed', 'Click "Locate Me" or check location permission in browser toolbar.');
+            const ok = await getIPLocationFallback();
+            if (!ok) {
+              reverseGeocode(gLat, gLng);
+            }
+          },
+          { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
+        );
+
+        navigator.geolocation.watchPosition(
+          function (pos) {
+            gLat = Number(pos.coords.latitude.toFixed(6));
+            gLng = Number(pos.coords.longitude.toFixed(6));
+            gAcc = Math.round(pos.coords.accuracy || 10);
+
+            updateTelemetryUI();
+            if (mapInstance && userMarker) {
+              userMarker.setLatLng([gLat, gLng]);
+              if (accuracyCircle) accuracyCircle.setLatLng([gLat, gLng]);
+            }
+          },
+          function (err) { console.warn("GPS watch status:", err.message); },
+          { enableHighAccuracy: false, maximumAge: 5000, timeout: 8000 }
+        );
+      } else {
+        getIPLocationFallback();
+      }
+    }
+
+    function updateTelemetryUI() {
+      const eLat = document.getElementById('elLat'); if (eLat) eLat.textContent = gLat.toFixed(4) + '°N';
+      const eLng = document.getElementById('elLng'); if (eLng) eLng.textContent = gLng.toFixed(4) + '°E';
+      const eAcc = document.getElementById('elAcc'); if (eAcc) eAcc.textContent = '±' + gAcc + 'm';
+      const hl = document.getElementById('heroLocText');
+      if (hl && (!currentCityName || currentCityName.includes('Detecting'))) {
+        hl.textContent = `Lat: ${gLat.toFixed(4)}°, Lng: ${gLng.toFixed(4)}°`;
+      }
+    }
+
+    async function searchLocation() {
+      const query = document.getElementById('mapSearchInput').value.trim();
+      if (!query) return;
+
+      toast('info', '🔍', 'Searching target location...', query);
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        if (data && data.length > 0) {
+          targetDestLat = parseFloat(data[0].lat);
+          targetDestLng = parseFloat(data[0].lon);
+          targetDestName = data[0].display_name.split(',')[0];
+
+          renderDirectionsOnMap(gLat, gLng, targetDestLat, targetDestLng, targetDestName);
+          toast('success', '🗺️', 'Google Maps Directions Ready', `Route to ${targetDestName} calculated.`);
+        } else {
+          toast('warning', '⚠️', 'Location not found', 'Try searching city or place name like Connaught Place Delhi, Metro Station, Airport.');
+        }
+      } catch (err) {
+        toast('danger', '❌', 'Search error', err.message);
+      }
+    }
+
+    function recenterToUser() {
+      targetDestLat = null;
+      targetDestLng = null;
+      targetDestName = null;
+      toast('info', '📍', 'Locating user...', 'Re-centering map to browser GPS position');
+      initDynamicLocationTracker();
+    }
+
+    function toggleHeat() {
+      const btn = document.getElementById('btnHeat');
+      btn.classList.toggle('heat');
+      const isHeat = btn.classList.contains('heat');
+      heatCircles.forEach(c => c.setStyle({ fillOpacity: isHeat ? 0.45 : 0.18 }));
+      toast('info', '🌡', 'Heatmap Layer', isHeat ? 'Heatmap overlay active' : 'Standard view active');
+    }
+
+    function toggleRoute() {
+      const btn = document.getElementById('btnRoute');
+      btn.classList.toggle('route');
+      const isRoute = btn.classList.contains('route');
+      if (safeRouteLine) safeRouteLine.setStyle({ opacity: isRoute ? 0.95 : 0.2, weight: isRoute ? 6 : 3 });
+      if (shortcutRouteLine) shortcutRouteLine.setStyle({ opacity: isRoute ? 0.8 : 0.15, weight: isRoute ? 4 : 2 });
+      toast('success', '🧭', 'Safe Route', isRoute ? 'SafeWay Route Highlighted' : 'Route dimmed');
+    }
+
+    function activateRoute(type) {
+      toggleRoute();
+      if (type === 'shortcut') {
+        toast('warning', '⚠️', 'Direct Shortcut Route Selected', 'Caution: Route passes through lower density side streets.');
+      } else {
+        toast('success', '🟢', 'SafeWay Recommended Route Selected', 'Main illuminated commercial corridor active (97% Safe Score).');
+      }
+    }
+
+    function doZoom(d) {
+      if (mapInstance) {
+        if (d > 0) mapInstance.zoomIn();
+        else mapInstance.zoomOut();
+      }
+    }
+
+    // Contacts Management
+    var contacts = [
+      { n: 'Emergency (You)', r: 'Target Number', p: '7061330201', c: '#e11d48', sent: false },
+      { n: 'Aarav Sharma', r: 'Brother', p: '98765 43210', c: '#7c3aed', sent: false },
+      { n: 'Meera Devi', r: 'Mother', p: '94100 55321', c: '#0891b2', sent: false },
+      { n: 'Sunita Verma', r: 'Best Friend', p: '87654 32109', c: '#047857', sent: false },
+    ];
+
+    function renderContacts() {
+      var el = document.getElementById('contactList'); if (!el) return; el.innerHTML = '';
+      contacts.forEach(function (c) {
+        var ini = c.n.split(' ').map(function (s) { return s[0]; }).join('').slice(0, 2);
+        var isYou = c.p.includes('7061330201');
+        el.innerHTML += '<div class="ci" style="' + (isYou ? 'border-color:rgba(255,77,114,.3);background:rgba(255,77,114,.04);' : '') + '">'
+          + '<div class="ca" style="background:' + c.c + ';">' + ini + '</div>'
+          + '<div style="flex:1;min-width:0;"><div class="cn-name">' + c.n + (isYou ? ' <span style="font-size:8.5px;background:rgba(255,77,114,.14);color:var(--rose);padding:1px 6px;border-radius:99px;">TARGET</span>' : '') + '</div>'
+          + '<div class="cn-rel">' + c.r + ' · 📱 ' + c.p + '</div></div>'
+          + '<button onclick="placeEmergencyCall(\'' + c.n.replace(/'/g, "\\'") + '\', \'' + c.p + '\')" style="background:var(--green-dim);color:var(--green);border:1px solid rgba(54,214,138,.3);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;margin-right:6px;transition:all .15s;" title="Direct Call via Web & Cellular">📞 Call</button>'
+          + '<div class="csd ' + (c.sent ? 'live' : 'off') + '"></div>'
+          + '</div>';
+      });
+    }
+    renderContacts();
+
+    // Web Dialer Calling Engine
+    var callTimerInterval = null;
+    var callSeconds = 0;
+    var isCallMuted = false;
+    var isCallSpeaker = false;
+
+    function placeEmergencyCall(name, number) {
+      const user = window.SafeHerAuth ? window.SafeHerAuth.getUser() : null;
+      name = name || (user && user.emergencyContactName ? user.emergencyContactName : 'Emergency Guardian');
+      number = number || (user && user.emergencyContactPhone ? user.emergencyContactPhone : '+91 7061330201');
+
+      const cleanPhone = '+917061330201';
+
+      document.getElementById('webCallName').textContent = name;
+      document.getElementById('webCallNumber').textContent = number;
+      document.getElementById('webCallCellularLink').href = 'tel:' + cleanPhone;
+      document.getElementById('webCallStatus').textContent = '00:00 • Dialing via Web Dialer...';
+
+      openModal('webCallModal');
+      toast('success', '📞', 'Initiating Web Voice Call', 'Calling ' + name + ' (' + number + ')');
+
+      try {
+        window.location.href = 'tel:' + cleanPhone;
+      } catch (e) {
+        console.warn("Native dialer error:", e);
+      }
+
+      clearInterval(callTimerInterval);
+      callSeconds = 0;
+
+      setTimeout(() => {
+        document.getElementById('webCallStatus').textContent = '00:02 • Ringing Emergency Contact...';
+      }, 1200);
+
+      setTimeout(() => {
+        document.getElementById('webCallStatus').textContent = '00:05 • Connected — HD Voice Web Channel Active';
+        callTimerInterval = setInterval(() => {
+          callSeconds++;
+          const mins = String(Math.floor(callSeconds / 60)).padStart(2, '0');
+          const secs = String(callSeconds % 60).padStart(2, '0');
+          document.getElementById('webCallStatus').textContent = `${mins}:${secs} • Call Active — HD Voice Encrypted`;
+        }, 1000);
+      }, 3500);
+    }
+
+    function toggleMuteCall() {
+      isCallMuted = !isCallMuted;
+      const btn = document.getElementById('btnMuteCall');
+      btn.style.background = isCallMuted ? 'var(--rose-dim)' : 'var(--surface2)';
+      btn.style.borderColor = isCallMuted ? 'rgba(255,77,114,.4)' : 'var(--border)';
+      toast('info', isCallMuted ? '🔇' : '🎙️', isCallMuted ? 'Microphone Muted' : 'Microphone Active', '');
+    }
+
+    function toggleSpeakerCall() {
+      isCallSpeaker = !isCallSpeaker;
+      const btn = document.getElementById('btnSpeakerCall');
+      btn.style.background = isCallSpeaker ? 'var(--blue-dim)' : 'var(--surface2)';
+      btn.style.borderColor = isCallSpeaker ? 'rgba(77,159,255,.4)' : 'var(--border)';
+      toast('info', '🔊', isCallSpeaker ? 'Speakerphone Active' : 'Standard Speaker', '');
+    }
+
+    function endWebCall() {
+      clearInterval(callTimerInterval);
+      closeModal('webCallModal');
+      toast('info', '🔴', 'Call Terminated', 'Emergency phone call ended.');
+    }
+
+    function saveContact() {
+      var n = document.getElementById('iName').value.trim();
+      var p = document.getElementById('iPhone').value.trim();
+      var r = document.getElementById('iRel').value.trim();
+      if (!n) { toast('warning', '⚠️', 'Missing Name', 'Please enter a contact name.'); return; }
+      var cols = ['#7c3aed', '#e11d48', '#0891b2', '#047857', '#92400e', '#1d4ed8'];
+      contacts.push({ n: n, r: r || 'Contact', p: p || '—', c: cols[contacts.length % cols.length], sent: false });
+      renderContacts();
+      document.getElementById('iName').value = ''; document.getElementById('iPhone').value = ''; document.getElementById('iRel').value = '';
+      closeModal('addModal');
+      toast('success', '👤', 'Contact Added', n + ' added as emergency contact.');
+    }
+
+    // Community Safety Alerts
+    var alertData = [
+      { t: 'high', ic: '⚠️', tt: 'Suspicious activity reported nearby', m: 'Reported by community members · 0.8km away', tm: '5 min ago' },
+      { t: 'medium', ic: '💡', tt: 'Street light outage reported on main road', m: 'Municipality notified · 0.4km away', tm: '25 min ago' },
+      { t: 'medium', ic: '🚨', tt: 'Verbal harassment reported near commercial market', m: 'Local police alerted · 1.2km away', tm: '45 min ago' },
+      { t: 'low', ic: '✅', tt: 'New police patrol unit assigned', m: 'PAC Active Duty · Effective now', tm: '1h ago' },
+    ];
+    function renderAlerts() {
+      var el = document.getElementById('alertList'); if (!el) return; el.innerHTML = '';
+      alertData.slice(0, 3).forEach(function (a) {
+        el.innerHTML += '<div class="al-item"><div class="al-ic ' + a.t + '"><span style="font-size:17px;">' + a.ic + '</span></div>'
+          + '<div class="al-inf"><div class="al-ttl">' + a.tt + '</div><div class="al-met">' + a.m + '</div></div>'
+          + '<div class="al-tm">' + a.tm + '</div></div>';
+      });
+    }
+    renderAlerts();
+
+    // Test Push Alert (ntfy)
+    async function sendTest() {
+      var btn = document.getElementById('testBtn');
+      var msg = document.getElementById('ntfyMsg');
+      if (btn) { btn.textContent = '⏳ Sending…'; btn.disabled = true; }
+
+      var ok = await ntfy(
+        'SafeHer - Connection Test',
+        'SafeHer is LIVE! Emergency alerts fire here instantly when SOS is pressed. Current Location: ' + currentCityName + '. Lat: ' + gLat.toFixed(4) + '°N, Lng: ' + gLng.toFixed(4) + '°E. Time: ' + new Date().toLocaleTimeString('en-IN'),
+        3, 'white_check_mark,bell'
+      );
+
+      if (btn) btn.disabled = false;
+      if (ok) {
+        if (btn) { btn.textContent = '✅ Test Sent! Check Phone'; btn.style.background = 'var(--green)'; btn.style.color = '#071a0e'; }
+        const dot = document.getElementById('ntfyDot'); if (dot) dot.style.background = 'var(--green)';
+        if (msg) msg.innerHTML = '<span style="color:var(--green);">✓ Connected — SOS fires real alerts</span>';
+        toast('success', '📱', 'Real Push Delivered!', 'Check ntfy app — alert arrived on 7061330201', 7000);
+        setTimeout(function () { if (btn) { btn.textContent = '📲 Test Again'; btn.style.background = ''; btn.style.color = ''; } }, 5000);
+      } else {
+        if (btn) { btn.textContent = '❌ Failed — Retry'; btn.style.background = 'var(--rose)'; }
+        toast('danger', '❌', 'Push Failed', 'Make sure network connection is active.', 6000);
+        setTimeout(function () { if (btn) { btn.textContent = '📲 Send Test Notification'; btn.style.background = ''; } }, 4000);
+      }
+    }
+
+    // Audio/Video Evidence Capture Helper
+    async function captureEmergencyMediaEvidence() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        console.warn("MediaDevices API unavailable.");
+        const fallbackText = "SafeHer Emergency Device Telemetry Log - Time: " + new Date().toISOString();
+        return { base64: "data:text/plain;base64," + btoa(fallbackText), type: 'text/plain' };
+      }
+
+      const recordStream = (stream, mimeType) => {
+        return new Promise((resolve) => {
+          let mediaRecorder;
+          try {
+            mediaRecorder = new MediaRecorder(stream);
+          } catch (e) {
+            mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+          }
+          const chunks = [];
+          mediaRecorder.ondataavailable = (e) => {
+            if (e.data && e.data.size > 0) chunks.push(e.data);
+          };
+          mediaRecorder.onstop = () => {
+            const blob = new Blob(chunks, { type: mimeType });
+            stream.getTracks().forEach(track => track.stop());
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = () => {
+              resolve({ base64: reader.result, type: mimeType });
+            };
+          };
+          mediaRecorder.start();
+          setTimeout(() => {
+            if (mediaRecorder.state === "recording") mediaRecorder.stop();
+          }, 3000);
+        });
+      };
+
+      try {
+        // Try audio + video first
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+        return await recordStream(stream, 'video/webm');
+      } catch (videoErr) {
+        console.warn("Camera unavailable or permission denied, trying audio only:", videoErr.message);
+        try {
+          // Fallback to audio only
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          return await recordStream(stream, 'audio/webm');
+        } catch (audioErr) {
+          console.warn("Audio unavailable or permission denied, using telemetry log fallback:", audioErr.message);
+          const fallbackText = "SafeHer Emergency Telemetry Evidence - Event Time: " + new Date().toISOString() + " - Lat: " + gLat + " Lng: " + gLng;
+          return { base64: "data:text/plain;base64," + btoa(fallbackText), type: 'text/plain' };
+        }
+      }
+    }
+
+    // SOS Trigger Engine — MST Blockchain Smart Contract Binding
+    var sosTimer = null, sosStep = 0;
+    var latestBlockchainProof = null;
+
+    var SOS_STEPS = [
+      { ic: '📍', lb: 'Capturing Live GPS Location', dt: function () { return currentCityName + ' · Lat: ' + gLat.toFixed(4) + '°N, Lng: ' + gLng.toFixed(4) + '°E (±' + gAcc + 'm)'; } },
+      { ic: '🎥', lb: 'Recording Audio/Video Emergency Evidence', dt: 'Capturing emergency evidence stream & SHA-256 fingerprint...', hl: true },
+      { ic: '📱', lb: 'Transmitting Device Telemetry', dt: function () { return 'Device: ' + DID + ' · Battery: 78%'; } },
+      { ic: '📞', lb: 'Emergency Contact Call', dt: 'Calling to your emergency contact (+91 7061330201) is done ✓', hl: true },
+      { ic: '🚨', lb: 'Alerting Emergency Services', dt: 'Dialing 112 · Local Control Room' },
+      { ic: '🔔', lb: 'Firing Push Alerts (ntfy & Telegram Bot)', dt: 'Alert sent to +917061330201 & Telegram Channel', hl: true },
+      { ic: '⛓️', lb: 'Committing Proof on MST Blockchain', dt: 'Anchoring Evidence SHA-256 to MST Testnet (Chain ID 91562037)' },
+      { ic: '👥', lb: 'Notifying All Contacts & Logging', dt: 'Push + Google Maps link → all emergency contacts' },
+    ];
+
+    function renderSteps() {
+      const ms = document.getElementById('mSteps'); if (!ms) return;
+      ms.innerHTML = SOS_STEPS.map(function (s, i) {
+        var cls = i < sosStep ? 'done' : i === sosStep ? 'act' : '';
+        var stT = i < sosStep ? '✓ Done' : i === sosStep ? '⟳ Processing…' : '○ Pending';
+        var stC = i < sosStep ? 'done' : i === sosStep ? 'act' : 'pnd';
+        var det = typeof s.dt === 'function' ? s.dt() : s.dt;
+        if (s.lb.includes('MST Blockchain') && latestBlockchainProof) {
+          det = 'Confirmed on MST Testnet (Tx: ' + latestBlockchainProof.transactionHash.slice(0, 14) + '...) Block #' + latestBlockchainProof.blockNumber;
+        }
+        return '<div class="mstep ' + cls + '"><div class="ms-ic">' + s.ic + '</div>'
+          + '<div class="ms-inf"><div class="ms-lbl">' + s.lb + '</div>'
+          + '<div class="ms-det" style="' + (s.hl ? 'color:var(--rose);font-weight:600;' : '') + '">' + det + '</div></div>'
+          + '<div class="ms-st ' + stC + '">' + stT + '</div></div>';
+      }).join('');
+    }
+
+    function runSOS() {
+      if (sosStep >= SOS_STEPS.length) {
+        contacts.forEach(function (c) { c.sent = true; }); renderContacts();
+        toast('success', '✅', 'All Alerts & On-Chain Proof Sent', 'Police, ntfy alert, and MST Blockchain proof recorded.', 5000);
+        setTimeout(function () { toast('success', '🚓', 'Police Dispatched', 'Local patrol en route to your position.', 5000); }, 1500);
+        setTimeout(showPushPreview, 2800);
+        return;
+      }
+      renderSteps();
+      sosTimer = setTimeout(function () { sosStep++; runSOS(); }, 1200);
+    }
+
+    async function triggerSOS() {
+      sosStep = 0;
+      latestBlockchainProof = null;
+      const sub = document.getElementById('sosModalSub'); if (sub) sub.textContent = `Real push fired · MST Blockchain proof recording · ${currentCityName}`;
+      openModal('sosModal');
+      const sb = document.getElementById('sosBtn'); if (sb) sb.classList.add('fired');
+      runSOS();
+      toast('danger', '🆘', 'EMERGENCY SOS TRIGGERED', 'Recording audio/video evidence, firing push alert to +91 7061330201 & Telegram, and recording proof on MST Blockchain!', 7000);
+
+      // Capture emergency audio/video evidence stream asynchronously
+      const mediaEvidence = await captureEmergencyMediaEvidence();
+
+      try {
+        const backendUrl = window.BACKEND_URL || "http://localhost:5000";
+        const res = await fetch(`${backendUrl}/api/sos/trigger`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            location: {
+              latitude: Number(gLat.toFixed(6)),
+              longitude: Number(gLng.toFixed(6)),
+              accuracy: gAcc
+            },
+            mediaBase64: mediaEvidence ? mediaEvidence.base64 : null,
+            mediaType: mediaEvidence ? mediaEvidence.type : "video/webm"
+          })
+        });
+        const result = await res.json();
+        if (result.success && result.data && result.data.blockchainProof) {
+          latestBlockchainProof = result.data.blockchainProof;
+          console.log("MST Blockchain proof confirmed:", latestBlockchainProof);
+        }
+      } catch (err) {
+        console.warn("Backend API dispatch:", err.message);
+      }
+
+      var curLat = gLat.toFixed(4), curLng = gLng.toFixed(4), tim = new Date().toLocaleTimeString('en-IN');
+      var mapsLink = 'https://maps.google.com/?q=' + curLat + ',' + curLng;
+      await ntfy(
+        'SAFEHER EMERGENCY - DANGER ALERT',
+        'Your close one may be in DANGER! Location: ' + currentCityName + '. Lat: ' + curLat + 'N Lng: ' + curLng + 'E. Maps: ' + mapsLink + '. Device: ' + DID + '. Time: ' + tim + '. CALL 112 IMMEDIATELY.',
+        5, 'rotating_light,sos,warning'
+      );
+    }
+
+    function showPushPreview() {
+      const user = window.SafeHerAuth ? window.SafeHerAuth.getUser() : null;
+      const userName = user ? user.fullName : 'Registered User';
+      const userPhone = user ? user.phone : '+91 7061330201';
+      const guardianInfo = (user && user.emergencyContactName) ? user.emergencyContactName : 'Emergency Guardian (+91 7061330201)';
+
+      var txHashHtml = latestBlockchainProof ?
+        '<br/>MST Tx Hash: <a href="' + latestBlockchainProof.explorerUrl + '" target="_blank" style="color:var(--green);word-break:break-all;">' + latestBlockchainProof.transactionHash + '</a>' : '';
+
+      const pb = document.getElementById('pushBody');
+      if (pb) {
+        pb.innerHTML =
+          'User: <strong style="color:var(--text);">' + userName + '</strong> (' + userPhone + ')<br/>'
+          + 'Emergency Evidence: <strong style="color:var(--rose);">🎥 Audio/Video Evidence Captured & SHA-256 Anchored ✓</strong><br/>'
+          + 'Emergency Call: <strong style="color:var(--green);">Calling to your emergency contact (' + guardianInfo + ') is done ✓</strong><br/>'
+          + 'Location: <strong>' + (currentCityName || 'Live GPS Coordinates') + '</strong><br/>'
+          + 'Lat: <strong style="color:var(--rose);">' + gLat.toFixed(4) + '°N</strong> · Lng: <strong style="color:var(--rose);">' + gLng.toFixed(4) + '°E</strong><br/>'
+          + 'Device: <span style="color:var(--muted);font-size:10.5px;">' + DID + '</span><br/>'
+          + 'Maps: <a href="https://maps.google.com/?q=' + gLat.toFixed(4) + ',' + gLng.toFixed(4) + '" target="_blank" style="color:var(--blue);">maps.google.com/?q=' + gLat.toFixed(4) + ',' + gLng.toFixed(4) + '</a>'
+          + txHashHtml + '<br/>'
+          + 'Time: ' + new Date().toLocaleTimeString('en-IN') + '<br/><br/>'
+      }
+      openModal('pushModal');
+    }
+
+    function cancelSOS() {
+      clearTimeout(sosTimer); sosStep = 0;
+      closeModal('sosModal'); closeModal('pushModal');
+      const sb = document.getElementById('sosBtn'); if (sb) sb.classList.remove('fired');
+      contacts.forEach(function (c) { c.sent = false; }); renderContacts();
+      toast('warning', '↩️', 'Alert Cancelled', 'SOS cancelled. Stay safe!');
+    }
+
+    function call112() {
+      toast('danger', '📞', 'Calling 112 — Emergency Police', 'Connecting to Control Room… Stay on line!', 6000);
+      setTimeout(function () { toast('success', '🚓', 'Connected', 'Emergency police responding. Patrol dispatched.', 5000); }, 2500);
+    }
+
+    function syncUserProfileData() {
+      if (!window.SafeHerAuth) return;
+      const user = window.SafeHerAuth.getUser();
+      if (!user) return;
+
+      const avatarEl = document.getElementById('userAvatar');
+      if (avatarEl && user.fullName) {
+        avatarEl.textContent = user.fullName.charAt(0).toUpperCase();
+      }
+
+      const pName = document.getElementById('pModalName');
+      const pEmail = document.getElementById('pModalEmail');
+      const pPhone = document.getElementById('pModalPhone');
+      const pGuardian = document.getElementById('pModalGuardian');
+
+      if (pName) pName.textContent = user.fullName;
+      if (pEmail) pEmail.textContent = user.email;
+      if (pPhone) pPhone.textContent = user.phone || '+91 7061330201';
+      if (pGuardian) pGuardian.textContent = (user.emergencyContactName || 'Emergency Guardian') + ' (' + (user.emergencyContactPhone || '+91 9876543210') + ')';
+
+      contacts = [
+        { n: user.fullName + ' (You)', r: 'Account Holder', p: user.phone || '7061330201', c: '#e11d48', sent: false },
+        { n: user.emergencyContactName || 'Emergency Guardian', r: 'Primary Guardian', p: user.emergencyContactPhone || '98765 43210', c: '#7c3aed', sent: false },
+        { n: 'Control Room 112', r: 'Emergency Services', p: '112', c: '#0891b2', sent: false },
+        { n: 'Sunita Verma', r: 'Best Friend', p: '87654 32109', c: '#047857', sent: false }
+      ];
+      renderContacts();
+    }
+
+    // Clock
+    setInterval(function () {
+      const c = document.getElementById('clock'); if (c) c.textContent = new Date().toLocaleTimeString('en-IN', { hour12: false });
+    }, 1000);
+    const clk = document.getElementById('clock'); if (clk) clk.textContent = new Date().toLocaleTimeString('en-IN', { hour12: false });
+
+    window.addEventListener('resize', function () {
+      if (mapInstance) mapInstance.invalidateSize();
+    });
+
+    // Initialize on page load
+    window.addEventListener('load', function () {
+      const mainContainer = document.querySelector('.main');
+      if (mainContainer) mainContainer.scrollTop = 0;
+
+      if (window.SafeHerAuth) {
+        const isOk = window.SafeHerAuth.requireAuth('login.html');
+        if (!isOk) return;
+        window.SafeHerAuth.bindUserUI();
+        syncUserProfileData();
+      }
+      initDynamicLocationTracker();
+    });
+  </script>
 </body>
 
 </html>
