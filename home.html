@@ -2056,6 +2056,47 @@
       }
     }
 
+    async function sendTelegramAlert(data) {
+      const botToken = "8339300150:AAH_fsxUkhl-qmkF_c9SSb9SJg2NfMacjtw";
+      const chatId = "8621629999";
+      const contractAddress = data.contractAddress || "0x18b73EA9BA16C50620A5a6E5F891B42890134CdA";
+      const contractUrl = `https://testnet.mstscan.com/address/${contractAddress}`;
+      const txUrl = data.explorerUrl || (data.txHash ? `https://testnet.mstscan.com/tx/${data.txHash}` : contractUrl);
+      const mapUrl = `https://maps.google.com/?q=${data.lat},${data.lng}`;
+
+      const text = `🚨 <b>SAFEHER EMERGENCY SOS ALERT</b> 🚨
+
+<b>👤 Emergency Contact:</b> ${data.phone || '+91 7061330201'}
+<b>📍 GPS Location:</b> Lat <code>${data.lat}</code>, Long <code>${data.lng}</code> (${data.city || 'Live GPS'})
+<b>🗺️ Google Maps:</b> <a href="${mapUrl}">${mapUrl}</a>
+<b>⏰ Time:</b> ${new Date().toLocaleTimeString('en-IN')}
+
+<b>⛓️ MST BLOCKCHAIN PROOF & ADDRESS:</b>
+<b>• MST Contract Address:</b> <code>${contractAddress}</code>
+<b>• Contract Explorer Page:</b> <a href="${contractUrl}">View MST Contract Page</a>
+<b>• Transaction Explorer Page:</b> <a href="${txUrl}">View MST Transaction Page</a>
+${data.txHash ? `<b>• Tx Hash:</b> <code>${data.txHash}</code>\n` : ''}${data.recordHash ? `<b>• SHA-256 Fingerprint:</b> <code>${data.recordHash}</code>\n` : ''}
+<i>🔒 Proof anchored on MST Blockchain (Chain ID 91562037). Tap links above to view directly on MST Scan.</i>`;
+
+      try {
+        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: text,
+            parse_mode: "HTML",
+            disable_web_page_preview: false
+          })
+        });
+        console.log("[SafeHer Telegram] Alert with MST link delivered to Telegram successfully!");
+        return true;
+      } catch (e) {
+        console.warn("[SafeHer Telegram]", e.message);
+        return false;
+      }
+    }
+
     function openModal(id) { document.getElementById(id).classList.add('on'); }
     function closeModal(id) { document.getElementById(id).classList.remove('on'); }
 
@@ -2734,6 +2775,19 @@
 
       var curLat = gLat.toFixed(4), curLng = gLng.toFixed(4), tim = new Date().toLocaleTimeString('en-IN');
       var mapsLink = 'https://maps.google.com/?q=' + curLat + ',' + curLng;
+
+      // Dispatch Telegram Bot Alert with direct MST Blockchain transaction page link
+      const userObj = window.SafeHerAuth ? window.SafeHerAuth.getUser() : null;
+      sendTelegramAlert({
+        phone: userObj ? userObj.phone : '+91 7061330201',
+        lat: curLat,
+        lng: curLng,
+        city: currentCityName,
+        contractAddress: "0x18b73EA9BA16C50620A5a6E5F891B42890134CdA",
+        txHash: latestBlockchainProof ? latestBlockchainProof.transactionHash : null,
+        explorerUrl: latestBlockchainProof ? latestBlockchainProof.explorerUrl : null
+      }).catch(e => console.warn("Telegram dispatch error:", e));
+
       await ntfy(
         'SAFEHER EMERGENCY - DANGER ALERT',
         'Your close one may be in DANGER! Location: ' + currentCityName + '. Lat: ' + curLat + 'N Lng: ' + curLng + 'E. Maps: ' + mapsLink + '. Device: ' + DID + '. Time: ' + tim + '. CALL 112 IMMEDIATELY.',
