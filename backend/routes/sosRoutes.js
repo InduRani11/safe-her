@@ -7,7 +7,7 @@ const router = express.Router();
 // Trigger a new SOS Emergency event
 router.post("/trigger", async (req, res) => {
     try {
-        const { location } = req.body;
+        const { location, mediaBase64, mediaType } = req.body;
 
         if (!location) {
             return res.status(400).json({
@@ -16,7 +16,7 @@ router.post("/trigger", async (req, res) => {
             });
         }
 
-        const result = await createSOSRecord({ location });
+        const result = await createSOSRecord({ location, mediaBase64, mediaType });
 
         res.status(201).json({
             success: true,
